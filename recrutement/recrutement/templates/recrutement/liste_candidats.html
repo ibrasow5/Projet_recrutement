@@ -10,7 +10,7 @@
     <h1 class="mb-4">Candidats pour l'offre : {{ offre.titre }}</h1>
 
     <div class="mb-3">
-        <a href="{% url 'ajouter_candidat' %}" class="btn btn-primary">Ajouter un candidat</a>
+        <a href="{% url 'ajouter_candidat' offre_id=offre.id %}" class="btn btn-primary">Ajouter un candidat</a>
     </div>
 
     <table class="table table-bordered table-hover">

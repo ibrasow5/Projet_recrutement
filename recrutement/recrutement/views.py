@@ -7,12 +7,14 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from django.contrib import messages
 
-def liste_candidats(request):
-    candidats = Candidat.objects.all()
+def liste_candidats(request, offre_id):
+    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    candidats = Candidat.objects.filter(offre=offre)  # Récupère tous les candidats pour l'offre spécifique
+    # Pagination
     paginator = Paginator(candidats, 10)  # 10 candidats par page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'recrutement/liste_candidats.html', {'page_obj': page_obj})
+    return render(request, 'recrutement/liste_candidats.html', {'candidats': candidats, 'offre': offre})
 
 def detail_candidat(request, candidat_id):
     candidat = get_object_or_404(Candidat, pk=candidat_id)  # Récupère un candidat par son ID
@@ -20,19 +22,19 @@ def detail_candidat(request, candidat_id):
 
 def ajouter_candidat(request, offre_id):
     offre = OffreEmploi.objects.get(id=offre_id)
+    
     if request.method == 'POST':
-        form = CandidatForm(request.POST)
+        form = CandidatForm(request.POST, request.FILES)
         if form.is_valid():
             candidat = form.save(commit=False)
             candidat.offre = offre
             candidat.save()
-            # Redirection vers la liste des candidats pour cette offre
-            return redirect('candidats_pour_offre', offre_id=offre.id)
+            return redirect('liste_candidats', offre_id=offre.id)  # 👈 doit correspondre à l’URL déclarée
     else:
         form = CandidatForm()
-    return render(request, 'ajouter_candidat.html', {'form': form, 'offre': offre})
     
-    return render(request, 'recrutement/ajouter_candidat.html', {'form': form})
+    return render(request, 'recrutement/ajouter_candidat.html', {'form': form, 'offre': offre})
+
 
 def update_candidat(request, id):
     candidat = Candidat.objects.get(id=id)
