@@ -1,5 +1,5 @@
 from django import forms
-from .models import Candidat
+from .models import Candidat, OffreEmploi
 
 class CandidatForm(forms.ModelForm):
     class Meta:
@@ -20,3 +20,16 @@ class CandidatForm(forms.ModelForm):
         if Candidat.objects.filter(email=email).exists():
             raise forms.ValidationError("Un candidat avec cet email existe déjà.")
         return email
+    
+class OffreForm(forms.ModelForm):
+    class Meta:
+        model = OffreEmploi
+        fields = ['titre', 'description', 'date_limite']
+        widgets = {
+            'date_limite': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})

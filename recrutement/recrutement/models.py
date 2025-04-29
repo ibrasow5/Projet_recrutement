@@ -19,6 +19,16 @@ class Candidat(models.Model):
     cv = models.FileField(upload_to='cv/', null=True, blank=True)
     date_naissance = models.DateField()
     telephone = models.CharField(max_length=15, default='0000000000')
+    offre = models.ForeignKey('OffreEmploi', on_delete=models.SET_NULL, null=True, blank=True, related_name="candidats")
 
     def __str__(self):
         return f'{self.prenom} {self.nom}'
+
+class OffreEmploi(models.Model):
+    titre = models.CharField(max_length=255)
+    description = models.TextField()
+    date_publication = models.DateField(auto_now_add=True)
+    date_limite = models.DateField()
+
+    def __str__(self):
+        return self.titre        

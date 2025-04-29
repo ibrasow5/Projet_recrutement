@@ -1,10 +1,11 @@
 # recrutement/views.py
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Candidat
-from .forms import CandidatForm
+from .models import OffreEmploi, Candidat
+from .forms import CandidatForm, OffreForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
+from django.contrib import messages
 
 def liste_candidats(request):
     candidats = Candidat.objects.all()
@@ -17,17 +18,19 @@ def detail_candidat(request, candidat_id):
     candidat = get_object_or_404(Candidat, pk=candidat_id)  # Récupère un candidat par son ID
     return render(request, 'recrutement/detail_candidat.html', {'candidat': candidat})
 
-def ajouter_candidat(request):
-    if request.method == "POST":
-        form = CandidatForm(request.POST, request.FILES)
+def ajouter_candidat(request, offre_id):
+    offre = OffreEmploi.objects.get(id=offre_id)
+    if request.method == 'POST':
+        form = CandidatForm(request.POST)
         if form.is_valid():
-            form.save()  # Enregistre le candidat
-            print("Formulaire valide, redirection vers /candidats/")
-            return redirect('/candidats/')  # Redirige vers /candidats/
-        else:
-            print("Formulaire invalide", form.errors)  # Affiche les erreurs du formulaire
+            candidat = form.save(commit=False)
+            candidat.offre = offre
+            candidat.save()
+            # Redirection vers la liste des candidats pour cette offre
+            return redirect('candidats_pour_offre', offre_id=offre.id)
     else:
         form = CandidatForm()
+    return render(request, 'ajouter_candidat.html', {'form': form, 'offre': offre})
     
     return render(request, 'recrutement/ajouter_candidat.html', {'form': form})
 
@@ -46,3 +49,46 @@ def delete_candidat(request, id):
     candidat = Candidat.objects.get(id=id)
     candidat.delete()
     return HttpResponseRedirect(reverse('recrutement/liste_candidats'))
+
+def interface_rh(request):
+    offres = OffreEmploi.objects.all()
+    return render(request, 'recrutement/interface_rh.html', {'offres': offres})
+
+def ajouter_offre(request):
+    form = OffreForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect('interface_rh')
+    return render(request, 'recrutement/ajouter_offre.html', {'form': form})
+
+def candidats_pour_offre(request, offre_id):
+    offre = get_object_or_404(OffreEmploi, pk=offre_id)
+    candidats = offre.candidats.all()
+    return render(request, 'recrutement/liste_candidats.html', {
+        'offre': offre,
+        'candidats': candidats,
+    })
+
+def liste_offres(request):
+    offres = OffreEmploi.objects.all().order_by('-date_publication')
+    return render(request, 'offres/liste_offres.html', {'offres': offres})
+
+def modifier_offre(request, offre_id):
+    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    if request.method == 'POST':
+        form = OffreForm(request.POST, instance=offre)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Offre modifiée avec succès.')
+            return redirect('liste_offres')
+    else:
+        form = OffreForm(instance=offre)
+    return render(request, 'offres/modifier_offre.html', {'form': form, 'offre': offre})
+
+def supprimer_offre(request, offre_id):
+    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    if request.method == 'POST':
+        offre.delete()
+        messages.success(request, 'Offre supprimée avec succès.')
+        return redirect('liste_offres')
+    return render(request, 'offres/confirmer_suppression.html', {'offre': offre})
