@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 
 def liste_candidats(request, offre_id):
-    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    offre = get_object_or_404(OffreEmploi, pk=offre_id)
     candidats = Candidat.objects.filter(offre=offre)  # Récupère tous les candidats pour l'offre spécifique
     # Pagination
     paginator = Paginator(candidats, 10)  # 10 candidats par page
@@ -21,20 +21,17 @@ def detail_candidat(request, candidat_id):
     return render(request, 'recrutement/detail_candidat.html', {'candidat': candidat})
 
 def ajouter_candidat(request, offre_id):
-    offre = OffreEmploi.objects.get(id=offre_id)
-    
+    offre = get_object_or_404(OffreEmploi, pk=offre_id)
     if request.method == 'POST':
         form = CandidatForm(request.POST, request.FILES)
         if form.is_valid():
             candidat = form.save(commit=False)
             candidat.offre = offre
             candidat.save()
-            return redirect('liste_candidats', offre_id=offre.id)  # 👈 doit correspondre à l’URL déclarée
+            return redirect('liste_candidats', offre_id=offre.id)
     else:
         form = CandidatForm()
-    
     return render(request, 'recrutement/ajouter_candidat.html', {'form': form, 'offre': offre})
-
 
 def update_candidat(request, id):
     candidat = Candidat.objects.get(id=id)

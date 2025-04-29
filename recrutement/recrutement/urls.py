@@ -9,7 +9,7 @@ urlpatterns = [
     path('rh/', views.interface_rh, name='interface_rh'),
 
     # Gestion des candidats (uniquement accessible par le RH)
-    path('rh/candidats/', views.liste_candidats, name='liste_candidats'),
+    path('rh/candidats/<int:offre_id>/', views.liste_candidats, name='liste_candidats'),
     path('rh/candidat/<int:candidat_id>/', views.detail_candidat, name='detail_candidat'),
     path('rh/candidat/supprimer/<int:id>/', views.delete_candidat, name='delete_candidat'),
     path('candidat/ajouter/<int:offre_id>/', views.ajouter_candidat, name='ajouter_candidat'),
