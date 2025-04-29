@@ -8,13 +8,19 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 
 def liste_candidats(request, offre_id):
-    offre = get_object_or_404(OffreEmploi, pk=offre_id)
-    candidats = Candidat.objects.filter(offre=offre)  # Récupère tous les candidats pour l'offre spécifique
+    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    candidats = offre.candidats.all()  # grâce au related_name
+
     # Pagination
     paginator = Paginator(candidats, 10)  # 10 candidats par page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'recrutement/liste_candidats.html', {'candidats': candidats, 'offre': offre})
+    
+    return render(request, 'recrutement/liste_candidats.html', {
+        'offre': offre,
+        'candidats': candidats
+    })
+    
 
 def detail_candidat(request, candidat_id):
     candidat = get_object_or_404(Candidat, pk=candidat_id)  # Récupère un candidat par son ID
