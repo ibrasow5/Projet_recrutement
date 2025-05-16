@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 class CandidatForm(forms.ModelForm):
     class Meta:
         model = Candidat
-        fields = ['prenom', 'nom', 'email', 'cv', 'date_naissance', 'telephone']  # Inclure tous les champs nécessaires
+        fields = ['prenom', 'nom', 'email', 'cv', 'date_naissance']  # Inclure tous les champs nécessaires
         widgets = {
             'date_naissance': forms.DateInput(attrs={'type': 'date'}),  # Pour afficher un calendrier pour la date
         }
@@ -39,3 +39,21 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = Utilisateur
         fields = ('username', 'email', 'role', 'password1', 'password2')
+
+class CvUploadForm(forms.Form):
+    class Meta:
+        model = Candidat
+        fields = ['cv']
+    cv = forms.FileField(
+        label='Télécharger votre CV',
+        help_text='Formats acceptés : PDF, DOC, DOCX. Taille max : 2MB.',
+    )
+
+    def clean_cv(self):
+        cv = self.cleaned_data.get('cv')
+        if cv:
+            if cv.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Le fichier est trop volumineux (max 2MB).")
+            if not cv.name.lower().endswith(('.pdf', '.doc', '.docx')):
+                raise forms.ValidationError("Format non supporté.")
+        return cv

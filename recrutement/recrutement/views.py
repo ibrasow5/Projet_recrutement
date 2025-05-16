@@ -1,7 +1,7 @@
 # recrutement/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import OffreEmploi, Candidat
-from .forms import CandidatForm, OffreForm, CustomUserCreationForm
+from .forms import CandidatForm, OffreForm, CustomUserCreationForm, CvUploadForm
 from django.contrib.auth import login
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -123,4 +123,25 @@ def redirect_user(request):
 
 
 def home(request):
-    return render(request, 'recrutement/home.html')
+    offres = OffreEmploi.objects.order_by('-date_publication')  # tri par date décroissante
+    return render(request, 'recrutement/home.html', {'offres': offres})
+
+@login_required
+def postuler(request, offre_id):
+    offre = get_object_or_404(OffreEmploi, id=offre_id)
+
+    if request.method == 'POST':
+        form = CandidatForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidat = form.save(commit=False)
+            candidat.offre = offre
+            candidat.save()
+            messages.success(request, 'Votre candidature a été envoyée avec succès !')
+            return redirect('home')
+        else:
+            messages.error(request, 'Erreur lors de l’envoi du CV. Veuillez réessayer.')
+            return redirect('home')
+    else:
+        form = CandidatForm()
+
+    return render(request, 'recrutement/postuler_modal.html', {'form': form, 'offre': offre})
