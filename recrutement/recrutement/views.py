@@ -117,9 +117,9 @@ from django.contrib.auth.decorators import login_required
 def redirect_user(request):
     print(f"user connecté: {request.user}, authenticated: {request.user.is_authenticated}")
     if request.user.role == 'rh':
-        return redirect('recrutement/interface_rh')
+        return redirect('interface_rh')
     else:
-        return redirect('recrutement/home')
+        return redirect('home')
 
 
 def home(request):

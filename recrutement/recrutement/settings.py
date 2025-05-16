@@ -136,6 +136,7 @@ DATABASES = {
 }
 
 
+
 LANGUAGE_CODE = 'fr'  # Définit la langue par défaut sur le français
 USE_L10N = True  # Utilise les paramètres locaux pour formater les dates et autres valeurs
 
