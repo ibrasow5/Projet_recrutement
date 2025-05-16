@@ -128,20 +128,41 @@ def home(request):
 
 @login_required
 def postuler(request, offre_id):
+    print("📩 POSTULER: Début de la vue")
+
     offre = get_object_or_404(OffreEmploi, id=offre_id)
+    print(f"📝 Offre trouvée : {offre.titre} (id: {offre.id})")
 
     if request.method == 'POST':
+        print("🛂 Méthode POST détectée")
+        print(f"📦 FILES : {request.FILES}")
+        print(f"🧾 POST : {request.POST}")
+
         form = CandidatForm(request.POST, request.FILES)
         if form.is_valid():
+            print("✅ Formulaire valide")
             candidat = form.save(commit=False)
+            candidat.user = request.user
             candidat.offre = offre
             candidat.save()
+            print(f"💾 Candidat enregistré : {candidat}")
             messages.success(request, 'Votre candidature a été envoyée avec succès !')
             return redirect('home')
         else:
+            print("❌ Formulaire invalide")
+            print(form.errors)
             messages.error(request, 'Erreur lors de l’envoi du CV. Veuillez réessayer.')
             return redirect('home')
     else:
+        print("📭 Méthode GET détectée")
         form = CandidatForm()
 
-    return render(request, 'recrutement/postuler_modal.html', {'form': form, 'offre': offre})
+    return redirect('home')
+
+def delete_candidat(request, candidat_id):
+    candidat = get_object_or_404(Candidat, id=candidat_id)
+    candidat.delete()
+    messages.success(request, "Candidat supprimé avec succès.")
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+

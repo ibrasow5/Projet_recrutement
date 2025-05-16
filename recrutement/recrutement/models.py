@@ -1,6 +1,8 @@
 # recrutement/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+
 
 class Utilisateur(AbstractUser):
     ROLE_CHOICES = [
@@ -13,15 +15,12 @@ class Utilisateur(AbstractUser):
         return self.username
 
 class Candidat(models.Model):
-    prenom = models.CharField(max_length=100)
-    nom = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     cv = models.FileField(upload_to='cv/', null=True, blank=True)
-    date_naissance = models.DateField()
     offre = models.ForeignKey('OffreEmploi', on_delete=models.SET_NULL, null=True, blank=True, related_name="candidats")
 
     def __str__(self):
-        return f'{self.prenom} {self.nom}'
+        return f'{self.user.first_name} {self.user.last_name}'
 
 class OffreEmploi(models.Model):
     titre = models.CharField(max_length=255)

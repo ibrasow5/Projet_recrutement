@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -17,9 +19,7 @@ urlpatterns = [
     path('candidat/ajouter/<int:offre_id>/', views.ajouter_candidat, name='ajouter_candidat'),
 
     # Pour l’instant, modifier/supprimer ne seront pas utilisés (réservés plus tard au candidat)
-    # Mais tu peux les conserver si besoin
-    path('candidat/modifier/<int:id>/', views.update_candidat, name='update_candidat'),
-    path('candidat/supprimer/<int:id>/', views.delete_candidat, name='delete_candidat'),
+    path('candidat/delete/<int:candidat_id>/', views.delete_candidat, name='delete_candidat'),
 
     # ✅ Partie RH : gestion des offres d’emploi
     path('rh/offres/', views.liste_offres, name='liste_offres'),
@@ -41,3 +41,6 @@ urlpatterns = [
     path('interface_rh/', views.interface_rh, name='interface_rh'),
     path('postuler/<int:offre_id>/', views.postuler, name='postuler'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

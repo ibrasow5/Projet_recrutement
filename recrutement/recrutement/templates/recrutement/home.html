@@ -37,7 +37,7 @@
                     </h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ offre.lieu }}</h6>
                     <p class="card-text">{{ offre.description|truncatewords:30 }}</p>
-                    <p class="text-end text-muted small">{{ offre.date_pub|date:"d M Y" }}</p>
+                    <p class="text-end text-muted small">{{ offre.date_publication|date:"d M Y" }}</p>
                     <div class="text-end">
                         <!-- Bouton détails -->
                         <button type="button" class="btn btn-sm btn-info me-2" data-bs-toggle="modal" data-bs-target="#detailsModal{{ offre.id }}">
@@ -61,10 +61,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
               </div>
               <div class="modal-body">
+                <p><strong>Date de publication :</strong> {{ offre.date_publication|date:"d M Y" }}</p>
+                <p><strong>Date limite :</strong> {{ offre.date_limite|date:"d M Y" }}</p>
                 <p><strong>Lieu :</strong> {{ offre.lieu }}</p>
                 <p><strong>Description complète :</strong></p>
                 <p>{{ offre.description }}</p>
-                <p><strong>Date de publication :</strong> {{ offre.date_pub|date:"d M Y" }}</p>
                 <!-- Ajoute d'autres détails si besoin -->
               </div>
               <div class="modal-footer">

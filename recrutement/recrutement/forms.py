@@ -5,10 +5,8 @@ from django.contrib.auth.forms import UserCreationForm
 class CandidatForm(forms.ModelForm):
     class Meta:
         model = Candidat
-        fields = ['prenom', 'nom', 'email', 'cv', 'date_naissance']  # Inclure tous les champs nécessaires
-        widgets = {
-            'date_naissance': forms.DateInput(attrs={'type': 'date'}),  # Pour afficher un calendrier pour la date
-        }
+        fields = ['cv']
+        
 
     def __init__(self, *args, **kwargs):
         super(CandidatForm, self).__init__(*args, **kwargs)
