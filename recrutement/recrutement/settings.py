@@ -57,7 +57,7 @@ ROOT_URLCONF = 'recrutement.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'recrutement/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -141,4 +141,6 @@ USE_L10N = True  # Utilise les paramètres locaux pour formater les dates et aut
 
 AUTH_USER_MODEL = 'recrutement.Utilisateur'
 
-
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/redirect/'  # page de redirection intermédiaire selon rôle
+LOGOUT_REDIRECT_URL = '/login/'

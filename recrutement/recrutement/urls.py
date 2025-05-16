@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +30,11 @@ urlpatterns = [
     # ✅ Liste des candidats pour une offre spécifique
     path('rh/offres/<int:offre_id>/candidats/', views.candidats_pour_offre, name='candidats_pour_offre'),
 
+    # ✅ Page d'inscription et de connexion
+    path('register/', views.register, name='register'),
+    path('login/', auth_views.LoginView.as_view(template_name='recrutement/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('redirect/', views.redirect_user, name='redirect_user'),
+    path('home/', views.home, name='home'),
+    path('interface_rh/', views.interface_rh, name='interface_rh'),
 ]

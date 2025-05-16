@@ -1,7 +1,8 @@
 # recrutement/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import OffreEmploi, Candidat
-from .forms import CandidatForm, OffreForm
+from .forms import CandidatForm, OffreForm, CustomUserCreationForm
+from django.contrib.auth import login
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -97,3 +98,29 @@ def supprimer_offre(request, offre_id):
         messages.success(request, 'Offre supprimée avec succès.')
         return redirect('liste_offres')
     return render(request, 'offres/confirmer_suppression.html', {'offre': offre})
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, "Utilisateur créé avec succès.")
+            login(request, user)
+            return redirect('/redirect/')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'recrutement/register.html', {'form': form})
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def redirect_user(request):
+    print(f"user connecté: {request.user}, authenticated: {request.user.is_authenticated}")
+    if request.user.role == 'rh':
+        return redirect('recrutement/interface_rh')
+    else:
+        return redirect('recrutement/home')
+
+
+def home(request):
+    return render(request, 'recrutement/home.html')
