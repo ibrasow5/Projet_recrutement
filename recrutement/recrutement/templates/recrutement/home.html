@@ -1,114 +1,272 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>Accueil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentMatch - Accueil</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
 </head>
-<body class="bg-light">
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Recrutement</a>
-        <div class="d-flex">
-            <a href="{% url 'logout' %}" class="btn btn-outline-light">Déconnexion</a>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <i class="fas fa-brain"></i>
+                <span>TalentMatch</span>
+            </div>
+            <div class="d-flex">
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<div class="container mt-4">
-    <div class="alert alert-info text-center" role="alert">
-        Bonjour {{ user.username }} ! Bienvenue sur la plateforme de recrutement.
-    </div>
-</div>
+    <div class="container">
+        <div class="welcome-banner">
+            <div class="welcome-text">
+                <i class="fas fa-rocket"></i>
+                Bonjour {{ user.username }} ! Bienvenue sur la plateforme de recrutement intelligent.
+            </div>
+        </div>
 
-<div class="container mt-4">
-    <h3 class="mb-4 text-center">Offres d'emploi disponibles</h3>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="statnumber">{{ offres|length }}</span>
+                <span class="statlabel">Offres actives</span>
+            </div>
+            <div class="stat-item">
+                <span class="statnumber">147</span>
+                <span class="statlabel">CV analysés</span>
+            </div>
+            <div class="stat-item">
+                <span class="statnumber">92%</span>
+                <span class="statlabel">Matching précision</span>
+            </div>
+        </div>
 
-    {% if offres %}
-    <div class="row">
-        {% for offre in offres %}
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <!-- Titre cliquable pour ouvrir la modale détails -->
-                    <h5 class="card-title">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#detailsModal{{ offre.id }}">{{ offre.titre }}</a>
-                    </h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ offre.lieu }}</h6>
-                    <p class="card-text">{{ offre.description|truncatewords:30 }}</p>
-                    <p class="text-end text-muted small">{{ offre.date_publication|date:"d M Y" }}</p>
-                    <div class="text-end">
-                        <!-- Bouton détails -->
-                        <button type="button" class="btn btn-sm btn-info me-2" data-bs-toggle="modal" data-bs-target="#detailsModal{{ offre.id }}">
-                            Détails
-                        </button>
-                        <!-- Bouton postuler -->
-                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#postulerModal{{ offre.id }}">
-                            Postuler
-                        </button>
+        <h1 class="section-title">Offres d'emploi disponibles</h1>
+
+        {% if offres %}
+        <div class="jobs-grid">
+            {% for offre in offres %}
+            <div class="job-card">
+                <a href="#" class="job-title" data-bs-toggle="modal" data-bs-target="#detailsModal{{ offre.id }}">
+                    <i class="fas fa-briefcase"></i>
+                    {{ offre.titre }}
+                </a>
+                <div class="job-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ offre.lieu }}
+                </div>
+                <p class="job-description">
+                    {{ offre.description|truncatewords:30 }}
+                </p>
+                <div class="job-meta">
+                    <div class="job-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ offre.date_publication|date:"d M Y" }}
+                    </div>
+                    {% if offre.date_limite %}
+                    <div class="job-deadline">
+                        <i class="fas fa-clock"></i>
+                        Limite: {{ offre.date_limite|date:"d M Y" }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="job-actions">
+                    <button type="button" class="btn btn-details" data-bs-toggle="modal" data-bs-target="#detailsModal{{ offre.id }}">
+                        <i class="fas fa-info-circle"></i>
+                        Détails
+                    </button>
+                    <button type="button" class="btn btn-apply" data-bs-toggle="modal" data-bs-target="#postulerModal{{ offre.id }}">
+                        <i class="fas fa-paper-plane"></i>
+                        Postuler
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal détails modernisé -->
+            <div class="modal fade" id="detailsModal{{ offre.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ offre.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content modern-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailsModalLabel{{ offre.id }}">
+                                <i class="fas fa-briefcase"></i>
+                                {{ offre.titre }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="job-detail-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <strong>Date de publication :</strong> {{ offre.date_publication|date:"d M Y" }}
+                            </div>
+                            {% if offre.date_limite %}
+                            <div class="job-detail-item">
+                                <i class="fas fa-clock"></i>
+                                <strong>Date limite :</strong> {{ offre.date_limite|date:"d M Y" }}
+                            </div>
+                            {% endif %}
+                            <div class="job-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <strong>Lieu :</strong> {{ offre.lieu }}
+                            </div>
+                            <div class="job-detail-description">
+                                <h6><i class="fas fa-file-text"></i> Description complète :</h6>
+                                <div class="description-content">{{ offre.description|linebreaks }}</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times"></i>
+                                Fermer
+                            </button>
+                            <button type="button" class="btn btn-apply" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#postulerModal{{ offre.id }}">
+                                <i class="fas fa-paper-plane"></i>
+                                Postuler maintenant
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal détails -->
-        <div class="modal fade" id="detailsModal{{ offre.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ offre.id }}" aria-hidden="true">
-          <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="detailsModalLabel{{ offre.id }}">{{ offre.titre }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-              </div>
-              <div class="modal-body">
-                <p><strong>Date de publication :</strong> {{ offre.date_publication|date:"d M Y" }}</p>
-                <p><strong>Date limite :</strong> {{ offre.date_limite|date:"d M Y" }}</p>
-                <p><strong>Lieu :</strong> {{ offre.lieu }}</p>
-                <p><strong>Description complète :</strong></p>
-                <p>{{ offre.description }}</p>
-                <!-- Ajoute d'autres détails si besoin -->
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-              </div>
+            <!-- Modal postuler modernisé -->
+            <div class="modal fade" id="postulerModal{{ offre.id }}" tabindex="-1" aria-labelledby="postulerModalLabel{{ offre.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content modern-modal">
+                        <form method="post" action="{% url 'postuler' offre.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="postulerModalLabel{{ offre.id }}">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Postuler à : {{ offre.titre }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="upload-area">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <h6>Télécharger votre CV</h6>
+                                    <p class="upload-info">PDF, DOCX acceptés (max 2MB)</p>
+                                    <input class="form-control file-input" type="file" id="cv{{ offre.id }}" name="cv" accept=".pdf,.doc,.docx" required />
+                                    <div class="file-info" style="display: none;">
+                                        <i class="fas fa-file"></i>
+                                        <span class="file-name"></span>
+                                        <button type="button" class="remove-file"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-apply">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Envoyer ma candidature
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i>
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-          </div>
+            {% endfor %}
         </div>
-
-        <!-- Modal postuler -->
-        <div class="modal fade" id="postulerModal{{ offre.id }}" tabindex="-1" aria-labelledby="postulerModalLabel{{ offre.id }}" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <form method="post" action="{% url 'postuler' offre.id %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-header">
-                  <h5 class="modal-title" id="postulerModalLabel{{ offre.id }}">Postuler à : {{ offre.titre }}</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                </div>
-                <div class="modal-body">
-                  <div class="mb-3">
-                    <label for="cv{{ offre.id }}" class="form-label">Télécharger votre CV (PDF, DOCX, max 2MB)</label>
-                    <input class="form-control" type="file" id="cv{{ offre.id }}" name="cv" accept=".pdf,.doc,.docx" required />
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary">Envoyer</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                </div>
-              </form>
+        {% else %}
+        <div class="no-jobs-message">
+            <div class="no-jobs-icon">
+                <i class="fas fa-search"></i>
             </div>
-          </div>
+            <h4>Aucune offre disponible</h4>
+            <p>Revenez bientôt pour découvrir de nouvelles opportunités !</p>
         </div>
-
-        {% endfor %}
+        {% endif %}
     </div>
-    {% else %}
-    <div class="alert alert-warning text-center">
-        Aucune offre disponible pour le moment.
-    </div>
-    {% endif %}
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation des cartes au scroll
+        window.addEventListener('scroll', () => {
+            const cards = document.querySelectorAll('.job-card');
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const cardVisible = 150;
+                
+                if (cardTop < window.innerHeight - cardVisible) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Gestion du upload de fichier
+        document.querySelectorAll('.file-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const fileInfo = this.parentElement.querySelector('.file-info');
+                const fileName = this.parentElement.querySelector('.file-name');
+                const uploadArea = this.parentElement;
+                
+                if (this.files[0]) {
+                    fileName.textContent = this.files[0].name;
+                    fileInfo.style.display = 'flex';
+                    uploadArea.classList.add('has-file');
+                } else {
+                    fileInfo.style.display = 'none';
+                    uploadArea.classList.remove('has-file');
+                }
+            });
+        });
+
+        // Supprimer le fichier sélectionné
+        document.querySelectorAll('.remove-file').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.closest('.upload-area').querySelector('.file-input');
+                const fileInfo = this.closest('.upload-area').querySelector('.file-info');
+                const uploadArea = this.closest('.upload-area');
+                
+                input.value = '';
+                fileInfo.style.display = 'none';
+                uploadArea.classList.remove('has-file');
+            });
+        });
+
+        // Effets sur les boutons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!this.classList.contains('btn-close')) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
