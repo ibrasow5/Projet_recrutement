@@ -3,15 +3,46 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Ajouter une Offre</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une Offre - TalentMatch</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="container mt-4">
-    <h2>Nouvelle offre d'emploi</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-primary" type="submit">Enregistrer</button>
-    </form>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            <span>TalentMatch</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-plus-circle"></i> Ajouter une nouvelle offre</h2>
+                <a href="javascript:history.back()" class="btn btn-apply">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+            <form method="post" class="offre-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_titre">Titre de l'offre</label>
+                    <input type="text" id="id_titre" name="titre" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_description">Description</label>
+                    <textarea id="id_description" name="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="id_date_limite">Date limite</label>
+                    <input type="date" id="id_date_limite" name="date_limite" required>
+                </div>
+                <button type="submit" class="btn btn-apply">
+                    <i class="fas fa-save"></i> Enregistrer l'offre
+                </button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
