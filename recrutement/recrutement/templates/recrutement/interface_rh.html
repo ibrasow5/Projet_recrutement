@@ -7,6 +7,185 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Matching IA Section Styles */
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .matching-table th, .matching-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .matching-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .matching-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .matching-score {
+            display: flex;
+            align-items: center;
+        }
+
+        .score-bar {
+            height: 20px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border-radius: 10px;
+            margin-right: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .recommendation {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            display: inline-block;
+            color: white;
+        }
+
+        .recommendation.high {
+            background-color: #48bb78;
+        }
+
+        .recommendation.medium {
+            background-color: #ecc94b;
+            color: black;
+        }
+
+        .recommendation.low {
+            background-color: #f56565;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-style: italic;
+        }
+
+        .empty-state i {
+            margin-right: 8px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .matching-explanation {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1rem;
+        }
+
+        .matching-table-container {
+            margin-top: 20px;
+        }
+
+        .matching-table-container h3 {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+
+        /* General Styles for Reports Section */
+        .report-options, .generated-reports {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .report-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .report-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .report-form select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .report-form button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reports-list {
+            margin-top: 20px;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-info h4 {
+            margin: 0;
+            color: #2d3748;
+        }
+
+        .report-info p {
+            margin: 5px 0 0;
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .report-actions .btn-download {
+            background: linear-gradient(45deg, #48bb78, #2f855a);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
@@ -319,7 +498,7 @@
                     <!-- Tableau de Matching -->
                     <div class="matching-table-container">
                         <h3>Scores de Matching</h3>
-                        <table class="candidates-table">
+                        <table class="matching-table">
                             <thead>
                                 <tr>
                                     <th><i class="fas fa-user"></i> Candidat</th>
@@ -366,14 +545,57 @@
             <div id="rapports" class="dashboard-section" style="display: none;">
                 <div class="section-header">
                     <h2 class="section-title">
-                        <i class="fas fa-download"></i>
+                        <i class="fas fa-file-alt"></i>
                         Rapports
                     </h2>
                 </div>
+
                 <div class="reports-content">
-                    <p>Contenu des rapports...</p>
+                    <div class="report-options">
+                        <h3>Générer un Rapport</h3>
+                        <form class="report-form">
+                            <div class="form-group">
+                                <label for="report-type">Type de Rapport</label>
+                                <select id="report-type" class="form-control">
+                                    <option value="offres">Offres d'Emploi</option>
+                                    <option value="candidatures">Candidatures</option>
+                                    <option value="matching">Scores de Matching</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-period">Période</label>
+                                <select id="report-period" class="form-control">
+                                    <option value="week">Cette semaine</option>
+                                    <option value="month">Ce mois</option>
+                                    <option value="year">Cette année</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="generateReport()">
+                                <i class="fas fa-file-pdf"></i> Générer le Rapport
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="generated-reports">
+                        <h3>Rapports Générés</h3>
+                        <div class="reports-list">
+                            <div class="report-item">
+                                <div class="report-info">
+                                    <h4>Rapport des Offres d'Emploi - Juin 2025</h4>
+                                    <p>Généré le 17 Juin 2025</p>
+                                </div>
+                                <div class="report-actions">
+                                    <a href="#" class="btn btn-download">
+                                        <i class="fas fa-download"></i> Télécharger
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
 
 
             <!-- Section de configuration -->
@@ -438,6 +660,16 @@
                 }
             });
         });
+
+        function generateReport() {
+            const reportType = document.getElementById('report-type').value;
+            const reportPeriod = document.getElementById('report-period').value;
+
+            alert(`Génération du rapport : ${reportType} pour la période ${reportPeriod}`);
+            // Ajoutez ici la logique pour générer et télécharger le rapport
+        }
+
+
     </script>
 
 </body>
