@@ -57,15 +57,24 @@ def delete_candidat(request, id):
     return HttpResponseRedirect(reverse('recrutement/liste_candidats'))
 
 def interface_rh(request):
-    # Récupérer toutes les offres d'emploi
     offres = OffreEmploi.objects.all()
-
-    # Récupérer tous les candidats avec leurs CVs
     candidats = Candidat.objects.select_related('user', 'offre').all()
+
+    # Exemple de calcul de matching (simplifié)
+    matchings = []
+    for candidat in candidats:
+        # Calculer un score de matching fictif pour l'exemple
+        score = min(100, (candidat.user.first_name.__len__() * 5) + (candidat.offre.titre.__len__() % 20) * 3)
+        matchings.append({
+            'candidat': candidat,
+            'offre': candidat.offre,
+            'score': score
+        })
 
     context = {
         'offres': offres,
         'candidats': candidats,
+        'matchings': matchings,
     }
 
     return render(request, 'recrutement/interface_rh.html', context)
