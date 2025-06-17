@@ -28,17 +28,16 @@
                 <a href="#" class="nav-item" data-target="offres-emploi">
                     <i class="fas fa-briefcase"></i>
                     <span>Offres d'emploi</span>
-                    <span class="nav-badge">2</span>
+                    <span class="nav-badge">
+                        {{ offres|length }}
+                    </span>
                 </a>
                 <a href="#" class="nav-item" data-target="candidatures">
                     <i class="fas fa-users"></i>
                     <span>Candidatures</span>
-                    <span class="nav-badge">15</span>
-                </a>
-                <a href="#" class="nav-item" data-target="cvs-recus">
-                    <i class="fas fa-file-alt"></i>
-                    <span>CVs reçus</span>
-                    <span class="nav-badge">47</span>
+                    <span class="nav-badge">
+                        {{ candidats|length }}
+                    </span>
                 </a>
             </div>
 
@@ -268,55 +267,6 @@
                                 <th><i class="fas fa-user"></i> Nom</th>
                                 <th><i class="fas fa-envelope"></i> Email</th>
                                 <th><i class="fas fa-briefcase"></i> Offre</th>
-                                <th><i class="fas fa-calendar"></i> Date de postulation</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for candidat in candidats %}
-                            <tr>
-                                <td>{{ candidat.user.first_name|default:"Non renseigné" }}</td>
-                                <td>{{ candidat.user.last_name|default:"Non renseigné" }}</td>
-                                <td>{{ candidat.user.email }}</td>
-                                <td>{{ candidat.offre.titre }}</td>
-                                <td>{{ candidat.date_postulation|date:"d/m/Y" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <div class="empty-state">
-                        <i class="fas fa-user-slash"></i>
-                        <h3>Aucun candidat trouvé</h3>
-                        <p>Il n'y a pas encore de candidatures.</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-
-            <!-- Section des CVs reçus -->
-            <div id="cvs-recus" class="dashboard-section" style="display: none;">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-file-alt"></i>
-                        CVs Reçus
-                    </h2>
-                </div>
-                <div class="candidates-table-container">
-                    <div class="table-header">
-                        <h2 class="table-title">Liste des CVs reçus</h2>
-                        <span class="candidates-count">
-                            <i class="fas fa-file-check"></i>
-                            {{ candidats|length }} CV{{ candidats|length|pluralize }}
-                        </span>
-                    </div>
-                    {% if candidats %}
-                    <table class="candidates-table">
-                        <thead>
-                            <tr>
-                                <th><i class="fas fa-user"></i> Prénom</th>
-                                <th><i class="fas fa-user"></i> Nom</th>
-                                <th><i class="fas fa-envelope"></i> Email</th>
                                 <th><i class="fas fa-file-pdf"></i> CV</th>
                             </tr>
                         </thead>
@@ -326,6 +276,7 @@
                                 <td>{{ candidat.user.first_name|default:"Non renseigné" }}</td>
                                 <td>{{ candidat.user.last_name|default:"Non renseigné" }}</td>
                                 <td>{{ candidat.user.email }}</td>
+                                <td>{{ candidat.offre.titre }}</td>
                                 <td>
                                     {% if candidat.cv %}
                                         <a href="{{ candidat.cv.url }}" target="_blank" class="cv-link">
@@ -345,16 +296,16 @@
                     </table>
                     {% else %}
                     <div class="empty-state">
-                        <i class="fas fa-file-slash"></i>
-                        <h3>Aucun CV reçu</h3>
-                        <p>Aucun CV n'a été reçu.</p>
+                        <i class="fas fa-user-slash"></i>
+                        <h3>Aucun candidat trouvé</h3>
+                        <p>Il n'y a pas encore de candidatures.</p>
                     </div>
                     {% endif %}
                 </div>
             </div>
 
 
-
+            <
             <!-- Section des statistiques -->
             <div id="statistiques" class="dashboard-section" style="display: none;">
                 <div class="section-header">

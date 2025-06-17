@@ -57,8 +57,18 @@ def delete_candidat(request, id):
     return HttpResponseRedirect(reverse('recrutement/liste_candidats'))
 
 def interface_rh(request):
+    # Récupérer toutes les offres d'emploi
     offres = OffreEmploi.objects.all()
-    return render(request, 'recrutement/interface_rh.html', {'offres': offres})
+
+    # Récupérer tous les candidats avec leurs CVs
+    candidats = Candidat.objects.select_related('user', 'offre').all()
+
+    context = {
+        'offres': offres,
+        'candidats': candidats,
+    }
+
+    return render(request, 'recrutement/interface_rh.html', context)
 
 def ajouter_offre(request):
     form = OffreForm(request.POST or None)
