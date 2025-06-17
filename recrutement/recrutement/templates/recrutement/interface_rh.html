@@ -17,54 +17,54 @@
                 <span>TalentMatch RH</span>
             </div>
         </div>
-        
+
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Menu Principal</div>
-                <a href="#" class="nav-item active">
+                <a href="#" class="nav-item active" data-target="dashboard">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="offres-emploi">
                     <i class="fas fa-briefcase"></i>
                     <span>Offres d'emploi</span>
                     <span class="nav-badge">2</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="candidatures">
                     <i class="fas fa-users"></i>
                     <span>Candidatures</span>
                     <span class="nav-badge">15</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="cvs-recus">
                     <i class="fas fa-file-alt"></i>
                     <span>CVs reçus</span>
                     <span class="nav-badge">47</span>
                 </a>
             </div>
-            
+
             <div class="nav-section">
                 <div class="nav-section-title">Analyse</div>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="statistiques">
                     <i class="fas fa-chart-bar"></i>
                     <span>Statistiques</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="matching-ia">
                     <i class="fas fa-brain"></i>
                     <span>Matching IA</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="rapports">
                     <i class="fas fa-download"></i>
                     <span>Rapports</span>
                 </a>
             </div>
-            
+
             <div class="nav-section">
                 <div class="nav-section-title">Paramètres</div>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="configuration">
                     <i class="fas fa-cog"></i>
                     <span>Configuration</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="profil">
                     <i class="fas fa-user"></i>
                     <span>Profil</span>
                 </a>
@@ -85,7 +85,7 @@
                     <input type="text" class="search-input" placeholder="Rechercher candidats, offres...">
                 </div>
             </div>
-            
+
             <div class="header-right">
                 <div class="header-notifications">
                     <button class="notification-btn">
@@ -104,66 +104,68 @@
         <!-- Contenu du dashboard -->
         <main class="dashboard-content">
             <!-- Cartes de statistiques -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-briefcase"></i>
+            <div id="dashboard" class="dashboard-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ offres.count }}</div>
+                            <div class="stat-label">Offres actives</div>
+                        </div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +2 cette semaine
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-number">{{ offres.count }}</div>
-                        <div class="stat-label">Offres actives</div>
-                    </div>
-                    <div class="stat-trend positive">
-                        <i class="fas fa-arrow-up"></i>
-                        +2 cette semaine
-                    </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon candidates">
-                        <i class="fas fa-users"></i>
+                    <div class="stat-card">
+                        <div class="stat-icon candidates">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">147</div>
+                            <div class="stat-label">Candidatures</div>
+                        </div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +12 aujourd'hui
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-number">147</div>
-                        <div class="stat-label">Candidatures</div>
-                    </div>
-                    <div class="stat-trend positive">
-                        <i class="fas fa-arrow-up"></i>
-                        +12 aujourd'hui
-                    </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon matching">
-                        <i class="fas fa-brain"></i>
+                    <div class="stat-card">
+                        <div class="stat-icon matching">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">92%</div>
+                            <div class="stat-label">Précision IA</div>
+                        </div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +3% ce mois
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-number">92%</div>
-                        <div class="stat-label">Précision IA</div>
-                    </div>
-                    <div class="stat-trend positive">
-                        <i class="fas fa-arrow-up"></i>
-                        +3% ce mois
-                    </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon conversion">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">23%</div>
-                        <div class="stat-label">Taux conversion</div>
-                    </div>
-                    <div class="stat-trend neutral">
-                        <i class="fas fa-minus"></i>
-                        Stable
+                    <div class="stat-card">
+                        <div class="stat-icon conversion">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">23%</div>
+                            <div class="stat-label">Taux conversion</div>
+                        </div>
+                        <div class="stat-trend neutral">
+                            <i class="fas fa-minus"></i>
+                            Stable
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Section des offres d'emploi -->
-            <div class="dashboard-section">
+            <div id="offres-emploi" class="dashboard-section" style="display: none;">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-briefcase"></i>
@@ -180,7 +182,6 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="offers-grid">
                     {% for offre in offres %}
                     <div class="offer-card">
@@ -188,7 +189,7 @@
                             <div class="offer-title">{{ offre.titre }}</div>
                             <div class="offer-status active">Actif</div>
                         </div>
-                        
+
                         <div class="offer-meta">
                             <div class="offer-date">
                                 <i class="fas fa-calendar"></i>
@@ -242,23 +243,215 @@
                     {% endfor %}
                 </div>
             </div>
+
+            <!-- Section des candidatures -->
+            <div id="candidatures" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-users"></i>
+                        Candidatures
+                    </h2>
+                </div>
+                <div class="candidates-table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Liste des candidats</h2>
+                        <span class="candidates-count">
+                            <i class="fas fa-user-check"></i>
+                            {{ candidats|length }} candidat{{ candidats|length|pluralize }}
+                        </span>
+                    </div>
+                    {% if candidats %}
+                    <table class="candidates-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> Prénom</th>
+                                <th><i class="fas fa-user"></i> Nom</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-briefcase"></i> Offre</th>
+                                <th><i class="fas fa-calendar"></i> Date de postulation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidat in candidats %}
+                            <tr>
+                                <td>{{ candidat.user.first_name|default:"Non renseigné" }}</td>
+                                <td>{{ candidat.user.last_name|default:"Non renseigné" }}</td>
+                                <td>{{ candidat.user.email }}</td>
+                                <td>{{ candidat.offre.titre }}</td>
+                                <td>{{ candidat.date_postulation|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>Aucun candidat trouvé</h3>
+                        <p>Il n'y a pas encore de candidatures.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <!-- Section des CVs reçus -->
+            <div id="cvs-recus" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        CVs Reçus
+                    </h2>
+                </div>
+                <div class="candidates-table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Liste des CVs reçus</h2>
+                        <span class="candidates-count">
+                            <i class="fas fa-file-check"></i>
+                            {{ candidats|length }} CV{{ candidats|length|pluralize }}
+                        </span>
+                    </div>
+                    {% if candidats %}
+                    <table class="candidates-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> Prénom</th>
+                                <th><i class="fas fa-user"></i> Nom</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-file-pdf"></i> CV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidat in candidats %}
+                            <tr>
+                                <td>{{ candidat.user.first_name|default:"Non renseigné" }}</td>
+                                <td>{{ candidat.user.last_name|default:"Non renseigné" }}</td>
+                                <td>{{ candidat.user.email }}</td>
+                                <td>
+                                    {% if candidat.cv %}
+                                        <a href="{{ candidat.cv.url }}" target="_blank" class="cv-link">
+                                            <i class="fas fa-eye"></i>
+                                            Voir le CV
+                                        </a>
+                                    {% else %}
+                                        <span class="no-cv">
+                                            <i class="fas fa-times-circle"></i>
+                                            Aucun CV
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-file-slash"></i>
+                        <h3>Aucun CV reçu</h3>
+                        <p>Aucun CV n'a été reçu.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+
+
+            <!-- Section des statistiques -->
+            <div id="statistiques" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Statistiques
+                    </h2>
+                </div>
+                <div class="stats-content">
+                    <p>Contenu des statistiques et graphiques...</p>
+                </div>
+            </div>
+
+
+            <!-- Section du matching IA -->
+            <div id="matching-ia" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-brain"></i>
+                        Matching IA
+                    </h2>
+                </div>
+                <div class="matching-content">
+                    <p>Contenu du matching IA...</p>
+                </div>
+            </div>
+
+
+            <!-- Section des rapports -->
+            <div id="rapports" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-download"></i>
+                        Rapports
+                    </h2>
+                </div>
+                <div class="reports-content">
+                    <p>Contenu des rapports...</p>
+                </div>
+            </div>
+
+
+            <!-- Section de configuration -->
+            <div id="configuration" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-cog"></i>
+                        Configuration
+                    </h2>
+                </div>
+                <div class="config-content">
+                    <p>Contenu de configuration...</p>
+                </div>
+            </div>
+
+
+            <!-- Section du profil -->
+            <div id="profil" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Profil
+                    </h2>
+                </div>
+                <!-- Contenu du profil -->
+                <p>Contenu du profil...</p>
+            </div>
         </main>
     </div>
 
     <script>
-        // Toggle sidebar
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.rh-sidebar').classList.toggle('collapsed');
-            document.querySelector('.rh-main-content').classList.toggle('expanded');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar
+            document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+                document.querySelector('.rh-sidebar').classList.toggle('collapsed');
+                document.querySelector('.rh-main-content').classList.toggle('expanded');
+            });
 
-        // Navigation active state
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
+            // Navigation active state and content loading
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Masquer toutes les sections
+                    document.querySelectorAll('.dashboard-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+
+                    // Afficher la section correspondante
+                    const target = this.getAttribute('data-target');
+                    document.getElementById(target).style.display = 'block';
+                });
             });
         });
     </script>
+
 </body>
 </html>
