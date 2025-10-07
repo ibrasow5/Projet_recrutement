@@ -185,6 +185,104 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        /* Configuration Section Styles */
+        .configuration-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-section {
+            margin-bottom: 30px;
+        }
+
+        .config-section h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .config-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .config-form input[type="text"],
+        .config-form input[type="email"],
+        .config-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .config-form button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-right: 10px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
     </style>
 </head>
 <body>
@@ -606,10 +704,74 @@
                         Configuration
                     </h2>
                 </div>
-                <div class="config-content">
-                    <p>Contenu de configuration...</p>
+
+                <div class="configuration-content">
+                    <!-- Paramètres du profil -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-user"></i> Paramètres du Profil</h3>
+                        <form class="config-form">
+                            <div class="form-group">
+                                <label for="username">Nom d'utilisateur</label>
+                                <input type="text" id="username" class="form-control" value="{{ user.username }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" class="form-control" value="{{ user.email }}">
+                            </div>
+                            <button type="button" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les modifications
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Préférences de notification -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-bell"></i> Préférences de Notification</h3>
+                        <form class="config-form">
+                            <div class="form-group">
+                                <label class="switch">
+                                    <input type="checkbox" id="email-notifications">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span>Recevoir des notifications par email</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="switch">
+                                    <input type="checkbox" id="push-notifications">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span>Recevoir des notifications push</span>
+                            </div>
+                            <button type="button" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les modifications
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Paramètres de sécurité -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-lock"></i> Paramètres de Sécurité</h3>
+                        <form class="config-form">
+                            <div class="form-group">
+                                <label for="current-password">Mot de passe actuel</label>
+                                <input type="password" id="current-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Nouveau mot de passe</label>
+                                <input type="password" id="new-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Confirmer le nouveau mot de passe</label>
+                                <input type="password" id="confirm-password" class="form-control">
+                            </div>
+                            <button type="button" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Changer le mot de passe
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
+
 
 
             <!-- Section du profil -->
