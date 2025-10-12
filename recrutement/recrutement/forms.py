@@ -7,7 +7,6 @@ class CandidatForm(forms.ModelForm):
         model = Candidat
         fields = ['cv']
         
-
     def __init__(self, *args, **kwargs):
         super(CandidatForm, self).__init__(*args, **kwargs)
         # Ajouter des classes Bootstrap à tous les champs
@@ -34,14 +33,47 @@ class OffreForm(forms.ModelForm):
             field.widget.attrs.update({'class': 'form-control'})
 
 class CustomUserCreationForm(UserCreationForm):
+    prenom = forms.CharField(
+        max_length=100,
+        required=True,
+        label='Prénom',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Votre prénom',
+            'class': 'form-control'
+        })
+    )
+    nom = forms.CharField(
+        max_length=100,
+        required=True,
+        label='Nom',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Votre nom',
+            'class': 'form-control'
+        })
+    )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'votre.email@exemple.com',
+            'class': 'form-control'
+        })
+    )
+    
     class Meta:
         model = Utilisateur
-        fields = ('username', 'email', 'role', 'password1', 'password2')
+        fields = ('prenom', 'nom', 'username', 'email', 'password1', 'password2')
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.prenom = self.cleaned_data['prenom']
+        user.nom = self.cleaned_data['nom']
+        user.role = 'candidat'  # Force le rôle à candidat
+        if commit:
+            user.save()
+        return user
 
 class CvUploadForm(forms.Form):
-    class Meta:
-        model = Candidat
-        fields = ['cv']
     cv = forms.FileField(
         label='Télécharger votre CV',
         help_text='Formats acceptés : PDF, DOC, DOCX. Taille max : 2MB.',

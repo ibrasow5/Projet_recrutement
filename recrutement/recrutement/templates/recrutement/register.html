@@ -200,6 +200,13 @@
             margin-bottom: 1.2rem;
         }
 
+        /* Pour les champs côte à côte */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
         .form-label {
             font-weight: 600;
             color: #2d3748;
@@ -407,6 +414,10 @@
             .register-title {
                 font-size: 1.5rem;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Custom scrollbar pour la carte */
@@ -468,7 +479,7 @@
                 <i class="fas fa-brain logo-icon"></i>
                 <span class="logo-text">TalentMatch</span>
             </div>
-            <p class="register-subtitle">Rejoignez la plateforme de recrutement intelligent</p>
+            <p class="register-subtitle">Créez votre compte candidat et trouvez votre prochain emploi</p>
         </div>
 
         <!-- Card d'inscription -->
@@ -501,17 +512,66 @@
             <form method="post" novalidate id="registerForm">
                 {% csrf_token %}
                 
+                <!-- Prénom et Nom sur la même ligne -->
+                <div class="form-row">
+                    <!-- Prénom -->
+                    <div class="form-group">
+                        <label for="id_prenom" class="form-label">
+                            <i class="fas fa-id-card"></i>
+                            Prénom
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card input-icon"></i>
+                            <input type="text" 
+                                   name="prenom" 
+                                   id="id_prenom"
+                                   class="form-control {% if form.prenom.errors %}is-invalid{% endif %}"
+                                   placeholder="Votre prénom"
+                                   maxlength="100"
+                                   required>
+                        </div>
+                        {% if form.prenom.errors %}
+                            <div class="field-error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {% for error in form.prenom.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Nom -->
+                    <div class="form-group">
+                        <label for="id_nom" class="form-label">
+                            <i class="fas fa-id-card"></i>
+                            Nom
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card input-icon"></i>
+                            <input type="text" 
+                                   name="nom" 
+                                   id="id_nom"
+                                   class="form-control {% if form.nom.errors %}is-invalid{% endif %}"
+                                   placeholder="Votre nom"
+                                   maxlength="100"
+                                   required>
+                        </div>
+                        {% if form.nom.errors %}
+                            <div class="field-error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {% for error in form.nom.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- Nom d'utilisateur -->
                 <div class="form-group">
                     <label for="id_username" class="form-label">
                         <i class="fas fa-user"></i>
                         Nom d'utilisateur
-                        <i class="fas fa-info-circle info-icon"></i>
-                        <div class="help-tooltip">
-                            <ul>
-                            Requis. 150 caractères maximum. Uniquement des lettres, nombres et les caractères @ . + - _
-                            </ul>    
-                        </div>
                     </label>
                     <div class="input-wrapper">
                         <i class="fas fa-user input-icon"></i>
@@ -545,7 +605,8 @@
                                name="email" 
                                id="id_email"
                                class="form-control {% if form.email.errors %}is-invalid{% endif %}"
-                               placeholder="votre.email@exemple.com">
+                               placeholder="votre.email@exemple.com"
+                               required>
                     </div>
                     {% if form.email.errors %}
                         <div class="field-error">
@@ -562,14 +623,6 @@
                     <label for="id_password1" class="form-label">
                         <i class="fas fa-lock"></i>
                         Mot de passe
-                        <i class="fas fa-info-circle info-icon"></i>
-                        <div class="help-tooltip">
-                            <ul>
-                                <li>Au minimum 8 caractères</li>
-                                <li>Ne doit pas être entièrement numérique</li>
-                                <li>Ne doit pas être trop commun</li>
-                            </ul>
-                        </div>
                     </label>
                     <div class="input-wrapper">
                         <i class="fas fa-lock input-icon"></i>
@@ -609,32 +662,6 @@
                         <div class="field-error">
                             <i class="fas fa-exclamation-triangle"></i>
                             {% for error in form.password2.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Role -->
-                <div class="form-group">
-                    <label for="id_role" class="form-label">
-                        <i class="fas fa-user-tag"></i>
-                        Role
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user-tag input-icon"></i>
-                        <select name="role" 
-                                id="id_role"
-                                class="form-control {% if form.role.errors %}is-invalid{% endif %}"
-                                required>
-                            <option value="candidat">Candidat</option>
-                            <option value="recruteur">Recruteur</option>
-                        </select>
-                    </div>
-                    {% if form.role.errors %}
-                        <div class="field-error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            {% for error in form.role.errors %}
                                 {{ error }}
                             {% endfor %}
                         </div>

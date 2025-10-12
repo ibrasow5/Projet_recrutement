@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def liste_candidats(request, offre_id):
     offre = get_object_or_404(OffreEmploi, id=offre_id)
@@ -51,7 +52,7 @@ def update_candidat(request, id):
         form = CandidatForm(instance=candidat)
     return render(request, 'recrutement/update.html', {'form': form})
 
-def delete_candidat(request, id):
+def delete_candidat_old(request, id):
     candidat = Candidat.objects.get(id=id)
     candidat.delete()
     return HttpResponseRedirect(reverse('recrutement/liste_candidats'))
@@ -63,13 +64,14 @@ def interface_rh(request):
     # Exemple de calcul de matching (simplifié)
     matchings = []
     for candidat in candidats:
-        # Calculer un score de matching fictif pour l'exemple
-        score = min(100, (candidat.user.first_name.__len__() * 5) + (candidat.offre.titre.__len__() % 20) * 3)
-        matchings.append({
-            'candidat': candidat,
-            'offre': candidat.offre,
-            'score': score
-        })
+        if candidat.user and candidat.offre:
+            # Utiliser get_full_name() au lieu de first_name
+            score = min(100, (len(candidat.user.get_full_name()) * 5) + (len(candidat.offre.titre) % 20) * 3)
+            matchings.append({
+                'candidat': candidat,
+                'offre': candidat.offre,
+                'score': score
+            })
 
     context = {
         'offres': offres,
@@ -123,23 +125,22 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            messages.success(request, "Utilisateur créé avec succès.")
+            messages.success(request, f"Bienvenue {user.get_full_name()} ! Votre compte a été créé avec succès.")
             login(request, user)
             return redirect('/redirect/')
+        else:
+            messages.error(request, "Erreur lors de la création du compte. Veuillez vérifier les informations.")
     else:
         form = CustomUserCreationForm()
     return render(request, 'recrutement/register.html', {'form': form})
 
-from django.contrib.auth.decorators import login_required
-
 @login_required
 def redirect_user(request):
-    print(f"user connecté: {request.user}, authenticated: {request.user.is_authenticated}")
-    if request.user.role == 'rh':
+    print(f"user connecté: {request.user.get_full_name()}, role: {request.user.role}")
+    if request.user.role == 'recruteur':
         return redirect('interface_rh')
     else:
         return redirect('home')
-
 
 def home(request):
     offres = OffreEmploi.objects.order_by('-date_publication')  # tri par date décroissante
@@ -165,12 +166,12 @@ def postuler(request, offre_id):
             candidat.offre = offre
             candidat.save()
             print(f"💾 Candidat enregistré : {candidat}")
-            messages.success(request, 'Votre candidature a été envoyée avec succès !')
+            messages.success(request, f'Votre candidature pour "{offre.titre}" a été envoyée avec succès !')
             return redirect('home')
         else:
             print("❌ Formulaire invalide")
             print(form.errors)
-            messages.error(request, 'Erreur lors de l’envoi du CV. Veuillez réessayer.')
+            messages.error(request, 'Erreur lors de l\'envoi du CV. Veuillez réessayer.')
             return redirect('home')
     else:
         print("📭 Méthode GET détectée")
@@ -183,5 +184,3 @@ def delete_candidat(request, candidat_id):
     candidat.delete()
     messages.success(request, "Candidat supprimé avec succès.")
     return redirect(request.META.get('HTTP_REFERER', 'home'))
-
-
