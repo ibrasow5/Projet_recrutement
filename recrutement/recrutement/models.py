@@ -66,7 +66,24 @@ class OffreEmploi(models.Model):
     
     def get_salaire_display(self):
         if self.salaire_min and self.salaire_max:
-            return f"{self.salaire_min//1000}K - {self.salaire_max//1000}K FCFA"
+            # Fonction pour formater un montant
+            def format_montant(montant):
+                if montant >= 1_000_000:
+                    # Millions
+                    m = montant / 1_000_000
+                    if m == int(m):
+                        return f"{int(m)}M"
+                    else:
+                        return f"{m:.1f}M"
+                else:
+                    # Milliers
+                    k = montant / 1_000
+                    if k == int(k):
+                        return f"{int(k)}K"
+                    else:
+                        return f"{k:.0f}K"
+            
+            return f"{format_montant(self.salaire_min)} - {format_montant(self.salaire_max)} FCFA"
         return "Non spécifié"
     
     def get_competences_list(self):
