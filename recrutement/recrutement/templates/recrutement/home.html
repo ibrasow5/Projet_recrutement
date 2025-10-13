@@ -189,7 +189,7 @@
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-users"></i>
-                        <span>{{ offre.nb_candidats }} candidat{{ offre.nb_candidats|pluralize }}</span>
+                        <span>{{ offre.candidats|length }}  candidat{{ offre.candidats|length|pluralize }}</span>
                     </div>
                     {% if offre.date_limite %}
                     <div class="meta-item deadline">
