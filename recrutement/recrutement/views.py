@@ -82,10 +82,18 @@ def interface_rh(request):
     return render(request, 'recrutement/interface_rh.html', context)
 
 def ajouter_offre(request):
-    form = OffreForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect('interface_rh')
+    if request.method == "POST":
+        form = OffreForm(request.POST, request.FILES)  # ← IMPORTANT : request.FILES
+        if form.is_valid():
+            offre = form.save(commit=False)
+            offre.nb_candidats = 0  # Initialiser à 0
+            offre.save()
+            messages.success(request, "Offre publiée avec succès!")
+            return redirect('interface_rh')
+        else:
+            messages.error(request, "Erreur lors de la création de l'offre. Vérifiez les champs.")
+    else:
+        form = OffreForm()
     return render(request, 'recrutement/ajouter_offre.html', {'form': form})
 
 def candidats_pour_offre(request, offre_id):

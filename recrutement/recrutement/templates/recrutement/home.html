@@ -23,7 +23,7 @@
                 <span>TalentMatch</span>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <a href="#" class="nav-link-header"><i class="fas fa-home"></i> Accueil</a>
+                <a href="{% url 'home' %}" class="nav-link-header"><i class="fas fa-home"></i> Accueil</a>
                 <a href="#" class="nav-link-header"><i class="fas fa-briefcase"></i> Offres</a>
                 <a href="#" class="nav-link-header"><i class="fas fa-user"></i> Profil</a>
                 <a href="{% url 'logout' %}" class="logout-btn">
@@ -38,7 +38,7 @@
         <div class="welcome-banner">
             <div class="welcome-text">
                 <i class="fas fa-rocket"></i>
-                Bonjour {{ user.username }} ! Découvrez <strong>{{ offres|length }}</strong> opportunités qui correspondent à votre profil
+                Bonjour {{ user.get_full_name|default:user.username }} ! Découvrez <strong>{{ offres|length }}</strong> opportunités qui correspondent à votre profil
             </div>
         </div>
 
@@ -63,17 +63,14 @@
                 <button class="filter-chip active" data-filter="all">
                     <i class="fas fa-star"></i> Toutes les offres
                 </button>
-                <button class="filter-chip" data-filter="cdi">
+                <button class="filter-chip" data-filter="CDI">
                     <i class="fas fa-briefcase"></i> CDI
                 </button>
-                <button class="filter-chip" data-filter="cdd">
+                <button class="filter-chip" data-filter="CDD">
                     <i class="fas fa-clock"></i> CDD
                 </button>
-                <button class="filter-chip" data-filter="stage">
+                <button class="filter-chip" data-filter="Stage">
                     <i class="fas fa-graduation-cap"></i> Stage
-                </button>
-                <button class="filter-chip" data-filter="remote">
-                    <i class="fas fa-laptop-house"></i> Télétravail
                 </button>
                 <button class="filter-chip" data-filter="urgent">
                     <i class="fas fa-bolt"></i> Urgent
@@ -81,7 +78,7 @@
             </div>
         </div>
 
-        <!-- Barre de statistiques améliorée -->
+        <!-- Barre de statistiques -->
         <div class="stats-bar">
             <div class="stat-item">
                 <span class="statnumber">{{ offres|length }}</span>
@@ -114,17 +111,12 @@
         {% if offres %}
         <div class="jobs-grid">
             {% for offre in offres %}
-            <div class="job-card">
+            <div class="job-card" data-type="{{ offre.type_contrat }}">
                 <!-- En-tête de la carte avec logo entreprise -->
                 <div class="job-card-header">
                     <div class="company-info-section">
-                        <!-- Logo d'entreprise fictive basée sur l'index -->
-                        {% if forloop.counter == 1 %}
-                        <img src="https://logos-world.net/wp-content/uploads/2021/09/ServiceNow-Logo.png" alt="Logo" class="company-logo-img">
-                        {% elif forloop.counter == 2 %}
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Sonatel_logo.svg/2560px-Sonatel_logo.svg.png" alt="Logo" class="company-logo-img">
-                        {% elif forloop.counter == 3 %}
-                        <img src="https://upload.wikimedia.org/wikipedia/fr/thumb/2/23/Orange_logo.svg/2560px-Orange_logo.svg.png" alt="Logo" class="company-logo-img">
+                        {% if offre.logo %}
+                        <img src="{{ offre.logo.url }}" alt="{{ offre.entreprise }}" class="company-logo-img">
                         {% else %}
                         <div class="company-logo-placeholder">
                             <i class="fas fa-building"></i>
@@ -132,30 +124,20 @@
                         {% endif %}
                         
                         <div class="company-details-info">
-                            {% if forloop.counter == 1 %}
-                            <h3 class="company-name">ServiceNow Sénégal</h3>
-                            {% elif forloop.counter == 2 %}
-                            <h3 class="company-name">Sonatel</h3>
-                            {% elif forloop.counter == 3 %}
-                            <h3 class="company-name">Orange Sénégal</h3>
-                            {% else %}
-                            <h3 class="company-name">Entreprise Tech</h3>
-                            {% endif %}
+                            <h3 class="company-name">{{ offre.entreprise }}</h3>
                             <div class="job-location">
                                 <i class="fas fa-map-marker-alt"></i>
-                                {% if offre.lieu %}{{ offre.lieu }}{% else %}Plateau, Dakar{% endif %}
+                                {{ offre.localisation }}
                             </div>
                         </div>
                     </div>
                     
                     <div class="job-badges-container">
-                        {% if forloop.counter == 1 %}
+                        {% if offre.nouveau %}
                         <span class="job-badge badge-new">Nouveau</span>
+                        {% endif %}
+                        {% if offre.urgent %}
                         <span class="job-badge badge-urgent">Urgent</span>
-                        {% elif forloop.counter == 2 %}
-                        <span class="job-badge badge-featured">En vedette</span>
-                        {% elif forloop.counter == 3 %}
-                        <span class="job-badge badge-new">Nouveau</span>
                         {% endif %}
                     </div>
                 </div>
@@ -169,17 +151,19 @@
                 <!-- Tags d'informations -->
                 <div class="job-info-tags">
                     <span class="info-tag">
-                        <i class="fas fa-briefcase"></i> CDI
+                        <i class="fas fa-briefcase"></i> {{ offre.type_contrat }}
                     </span>
+                    {% if offre.salaire_min and offre.salaire_max %}
                     <span class="info-tag">
                         <i class="fas fa-money-bill-wave"></i> 
-                        {% if forloop.counter == 1 %}800K - 1.2M FCFA
-                        {% elif forloop.counter == 2 %}700K - 1M FCFA
-                        {% else %}600K - 900K FCFA{% endif %}
+                        {{ offre.get_salaire_display }}
                     </span>
+                    {% endif %}
+                    {% if offre.temps_plein %}
                     <span class="info-tag">
                         <i class="fas fa-clock"></i> Temps plein
                     </span>
+                    {% endif %}
                 </div>
 
                 <!-- Description -->
@@ -191,21 +175,9 @@
                 <div class="skills-required">
                     <span class="skills-label">Compétences:</span>
                     <div class="skills-tags-list">
-                        {% if forloop.counter == 1 %}
-                        <span class="skill-badge">JavaScript</span>
-                        <span class="skill-badge">ServiceNow</span>
-                        <span class="skill-badge">ITIL</span>
-                        <span class="skill-badge">API REST</span>
-                        {% elif forloop.counter == 2 %}
-                        <span class="skill-badge">React</span>
-                        <span class="skill-badge">Node.js</span>
-                        <span class="skill-badge">Python</span>
-                        <span class="skill-badge">SQL</span>
-                        {% else %}
-                        <span class="skill-badge">Python</span>
-                        <span class="skill-badge">Django</span>
-                        <span class="skill-badge">PostgreSQL</span>
-                        {% endif %}
+                        {% for competence in offre.get_competences_list %}
+                        <span class="skill-badge">{{ competence }}</span>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -217,7 +189,7 @@
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-users"></i>
-                        <span>{% cycle '23' '15' '42' '31' %} candidats</span>
+                        <span>{{ offre.nb_candidats }} candidat{{ offre.nb_candidats|pluralize }}</span>
                     </div>
                     {% if offre.date_limite %}
                     <div class="meta-item deadline">
@@ -243,7 +215,7 @@
                 </div>
             </div>
 
-            <!-- Modal détails (inchangé) -->
+            <!-- Modal détails -->
             <div class="modal fade" id="detailsModal{{ offre.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ offre.id }}" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content modern-modal">
@@ -256,6 +228,24 @@
                         </div>
                         <div class="modal-body">
                             <div class="job-detail-item">
+                                <i class="fas fa-building"></i>
+                                <strong>Entreprise :</strong> {{ offre.entreprise }}
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <strong>Lieu :</strong> {{ offre.localisation }}
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-file-contract"></i>
+                                <strong>Type de contrat :</strong> {{ offre.type_contrat }}
+                            </div>
+                            {% if offre.salaire_min and offre.salaire_max %}
+                            <div class="job-detail-item">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <strong>Salaire :</strong> {{ offre.get_salaire_display }}
+                            </div>
+                            {% endif %}
+                            <div class="job-detail-item">
                                 <i class="fas fa-calendar-alt"></i>
                                 <strong>Date de publication :</strong> {{ offre.date_publication|date:"d M Y" }}
                             </div>
@@ -265,13 +255,17 @@
                                 <strong>Date limite :</strong> {{ offre.date_limite|date:"d M Y" }}
                             </div>
                             {% endif %}
-                            <div class="job-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <strong>Lieu :</strong> {{ offre.lieu }}
-                            </div>
                             <div class="job-detail-description">
                                 <h6><i class="fas fa-file-text"></i> Description complète :</h6>
                                 <div class="description-content">{{ offre.description|linebreaks }}</div>
+                            </div>
+                            <div class="job-detail-item">
+                                <h6><i class="fas fa-code"></i> Compétences requises :</h6>
+                                <div class="skills-tags-list">
+                                    {% for competence in offre.get_competences_list %}
+                                    <span class="skill-badge">{{ competence }}</span>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -288,7 +282,7 @@
                 </div>
             </div>
 
-            <!-- Modal postuler (inchangé) -->
+            <!-- Modal postuler -->
             <div class="modal fade" id="postulerModal{{ offre.id }}" tabindex="-1" aria-labelledby="postulerModalLabel{{ offre.id }}" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content modern-modal">
@@ -364,6 +358,21 @@
             chip.addEventListener('click', function() {
                 document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                const cards = document.querySelectorAll('.job-card');
+                
+                cards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else if (filter === 'urgent') {
+                        const hasUrgent = card.querySelector('.badge-urgent');
+                        card.style.display = hasUrgent ? 'block' : 'none';
+                    } else {
+                        const cardType = card.getAttribute('data-type');
+                        card.style.display = cardType === filter ? 'block' : 'none';
+                    }
+                });
             });
         });
 

@@ -6,7 +6,318 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une Offre - TalentMatch</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .logo i {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        .btn-back {
+            background: #e2e8f0;
+            color: #2d3748;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header h2 i {
+            color: #667eea;
+        }
+
+        .form-header p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group label i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Checkbox personnalisée */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Section */
+        .form-section {
+            border-top: 2px solid #e2e8f0;
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section-title i {
+            color: #667eea;
+        }
+
+        /* Aide */
+        .help-text {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        /* Boutons */
+        .btn-submit {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            width: 100%;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-submit i {
+            font-size: 1.2rem;
+        }
+
+        /* Messages d'erreur */
+        .error-message {
+            background: #fee;
+            border-left: 4px solid #e53e3e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #c53030;
+            font-size: 0.9rem;
+        }
+
+        .field-error {
+            color: #e53e3e;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Messages de succès */
+        .success-message {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #155724;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* File input custom */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border: 2px dashed #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .file-input-label:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .file-input-label i {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -14,35 +325,235 @@
             <i class="fas fa-brain"></i>
             <span>TalentMatch</span>
         </div>
+        <a href="{% url 'interface_rh' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Retour au dashboard
+        </a>
     </nav>
 
     <div class="container">
-        <div class="form-container">
+        <div class="form-card">
             <div class="form-header">
-                <h2><i class="fas fa-plus-circle"></i> Ajouter une nouvelle offre</h2>
-                <a href="javascript:history.back()" class="btn btn-apply">
-                    <i class="fas fa-arrow-left"></i> Retour
-                </a>
+                <h2>
+                    <i class="fas fa-plus-circle"></i>
+                    Publier une nouvelle offre d'emploi
+                </h2>
+                <p>Remplissez tous les champs pour créer une offre attractive</p>
             </div>
-            <form method="post" class="offre-form">
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="success-message">
+                        <i class="fas fa-check-circle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_titre">Titre de l'offre</label>
-                    <input type="text" id="id_titre" name="titre" required>
+                
+                <!-- Informations entreprise -->
+                <div class="form-section-title">
+                    <i class="fas fa-building"></i>
+                    Informations sur l'entreprise
                 </div>
-                <div class="form-group">
-                    <label for="id_description">Description</label>
-                    <textarea id="id_description" name="description" required></textarea>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_entreprise">
+                            <i class="fas fa-briefcase"></i>
+                            Nom de l'entreprise *
+                        </label>
+                        {{ form.entreprise }}
+                        {% if form.entreprise.errors %}
+                            <div class="field-error">{{ form.entreprise.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_localisation">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Localisation *
+                        </label>
+                        {{ form.localisation }}
+                        <div class="help-text">Ex: Plateau, Dakar</div>
+                        {% if form.localisation.errors %}
+                            <div class="field-error">{{ form.localisation.errors.0 }}</div>
+                        {% endif %}
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="id_date_limite">Date limite</label>
-                    <input type="date" id="id_date_limite" name="date_limite" required>
+                    <label for="id_logo">
+                        <i class="fas fa-image"></i>
+                        Logo de l'entreprise
+                    </label>
+                    <div class="file-input-wrapper">
+                        {{ form.logo }}
+                        <label for="id_logo" class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Cliquez pour télécharger le logo (optionnel)</span>
+                        </label>
+                    </div>
+                    <div class="help-text">Format recommandé: PNG ou JPG, max 2MB</div>
+                    {% if form.logo.errors %}
+                        <div class="field-error">{{ form.logo.errors.0 }}</div>
+                    {% endif %}
                 </div>
-                <button type="submit" class="btn btn-apply">
-                    <i class="fas fa-save"></i> Enregistrer l'offre
+
+                <!-- Détails du poste -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-file-alt"></i>
+                        Détails du poste
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_titre">
+                            <i class="fas fa-heading"></i>
+                            Titre du poste *
+                        </label>
+                        {{ form.titre }}
+                        <div class="help-text">Ex: Développeur Web, Chef de projet IT</div>
+                        {% if form.titre.errors %}
+                            <div class="field-error">{{ form.titre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_description">
+                            <i class="fas fa-align-left"></i>
+                            Description du poste *
+                        </label>
+                        {{ form.description }}
+                        <div class="help-text">Décrivez les missions, responsabilités et profil recherché</div>
+                        {% if form.description.errors %}
+                            <div class="field-error">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="id_type_contrat">
+                                <i class="fas fa-file-contract"></i>
+                                Type de contrat *
+                            </label>
+                            {{ form.type_contrat }}
+                            {% if form.type_contrat.errors %}
+                                <div class="field-error">{{ form.type_contrat.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_salaire_min">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Salaire min (FCFA)
+                            </label>
+                            {{ form.salaire_min }}
+                            {% if form.salaire_min.errors %}
+                                <div class="field-error">{{ form.salaire_min.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_salaire_max">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Salaire max (FCFA)
+                            </label>
+                            {{ form.salaire_max }}
+                            {% if form.salaire_max.errors %}
+                                <div class="field-error">{{ form.salaire_max.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_competences">
+                            <i class="fas fa-code"></i>
+                            Compétences requises *
+                        </label>
+                        {{ form.competences }}
+                        <div class="help-text">Séparez les compétences par des virgules (Ex: JavaScript, React, Angular)</div>
+                        {% if form.competences.errors %}
+                            <div class="field-error">{{ form.competences.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_date_limite">
+                            <i class="fas fa-calendar-alt"></i>
+                            Date limite de candidature *
+                        </label>
+                        {{ form.date_limite }}
+                        {% if form.date_limite.errors %}
+                            <div class="field-error">{{ form.date_limite.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-cog"></i>
+                        Options d'affichage
+                    </div>
+
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            {{ form.temps_plein }}
+                            <label for="id_temps_plein">
+                                <i class="fas fa-clock"></i> Temps plein
+                            </label>
+                        </div>
+
+                        <div class="checkbox-item">
+                            {{ form.urgent }}
+                            <label for="id_urgent">
+                                <i class="fas fa-exclamation-circle"></i> Offre urgente
+                            </label>
+                        </div>
+                    </div>
+                    <div class="help-text">Les offres urgentes seront mises en avant avec un badge rouge</div>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i>
+                    Publier l'offre d'emploi
                 </button>
             </form>
         </div>
     </div>
+
+    <script>
+        // Preview du nom de fichier pour le logo
+        document.getElementById('id_logo').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            if (fileName) {
+                const label = document.querySelector('.file-input-label span');
+                label.textContent = `Fichier sélectionné: ${fileName}`;
+            }
+        });
+
+        // Validation côté client
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const salMin = document.getElementById('id_salaire_min').value;
+            const salMax = document.getElementById('id_salaire_max').value;
+            
+            if (salMin && salMax && parseInt(salMin) > parseInt(salMax)) {
+                e.preventDefault();
+                alert('Le salaire minimum ne peut pas être supérieur au salaire maximum');
+            }
+        });
+    </script>
 </body>
 </html>

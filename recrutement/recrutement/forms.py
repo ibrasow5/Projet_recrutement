@@ -22,15 +22,22 @@ class CandidatForm(forms.ModelForm):
 class OffreForm(forms.ModelForm):
     class Meta:
         model = OffreEmploi
-        fields = ['titre', 'description', 'date_limite']
+        fields = [
+            'entreprise', 'logo', 'localisation', 'titre', 'description',
+            'type_contrat', 'salaire_min', 'salaire_max', 'competences',
+            'temps_plein', 'urgent', 'date_limite'
+        ]
         widgets = {
             'date_limite': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'rows': 5, 'class': 'form-control'}),
+            'competences': forms.Textarea(attrs={'rows': 3, 'class': 'form-control', 'placeholder': 'Ex: JavaScript, ServiceNow, ITIL, API REST'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.update({'class': 'form-control'})
+            if not isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': 'form-control'})
 
 class CustomUserCreationForm(UserCreationForm):
     prenom = forms.CharField(
