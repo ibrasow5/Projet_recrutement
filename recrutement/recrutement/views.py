@@ -61,17 +61,18 @@ def interface_rh(request):
     offres = OffreEmploi.objects.all()
     candidats = Candidat.objects.select_related('user', 'offre').all()
 
-    # Exemple de calcul de matching (simplifié)
     matchings = []
     for candidat in candidats:
         if candidat.user and candidat.offre:
-            # Utiliser get_full_name() au lieu de first_name
-            score = min(100, (len(candidat.user.get_full_name()) * 5) + (len(candidat.offre.titre) % 20) * 3)
+            score = min(100, (len(candidat.user.get_full_name()) * 4) + (len(candidat.offre.titre) % 20) * 3)
             matchings.append({
                 'candidat': candidat,
                 'offre': candidat.offre,
                 'score': score
             })
+
+    # 🔽 Tri du plus haut score au plus bas
+    matchings = sorted(matchings, key=lambda x: x['score'], reverse=True)
 
     context = {
         'offres': offres,
@@ -80,6 +81,7 @@ def interface_rh(request):
     }
 
     return render(request, 'recrutement/interface_rh.html', context)
+
 
 def ajouter_offre(request):
     if request.method == "POST":
