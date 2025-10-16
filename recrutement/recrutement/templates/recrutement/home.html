@@ -453,6 +453,153 @@
                 }
             });
         });
+
+
+        // Recherche d'offres
+    document.querySelector('.search-btn-home').addEventListener('click', function() {
+        performSearch();
+    });
+
+    // Recherche en appuyant sur Entrée
+    document.getElementById('searchJob').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    document.getElementById('searchLocation').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    function performSearch() {
+        const searchTerm = document.getElementById('searchJob').value.toLowerCase();
+        const location = document.getElementById('searchLocation').value.toLowerCase();
+        const cards = document.querySelectorAll('.job-card');
+
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const title = card.querySelector('.job-title').textContent.toLowerCase();
+            const description = card.querySelector('.job-description').textContent.toLowerCase();
+            const cardLocation = card.querySelector('.job-location').textContent.toLowerCase();
+            const skills = Array.from(card.querySelectorAll('.skill-badge')).map(badge => badge.textContent.toLowerCase()).join(' ');
+
+            // Vérifier si le terme de recherche correspond
+            const matchesSearch = !searchTerm || 
+                                 title.includes(searchTerm) || 
+                                 description.includes(searchTerm) || 
+                                 skills.includes(searchTerm);
+
+            // Vérifier si la localisation correspond
+            const matchesLocation = !location || 
+                                   location === 'dakar' || 
+                                   cardLocation.includes(location);
+
+            if (matchesSearch && matchesLocation) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Afficher un message si aucun résultat
+        showNoResultsMessage(visibleCount);
+    }
+
+    function showNoResultsMessage(count) {
+        // Supprimer l'ancien message s'il existe
+        const oldMessage = document.querySelector('.no-results-message');
+        if (oldMessage) oldMessage.remove();
+
+        if (count === 0) {
+            const message = document.createElement('div');
+            message.className = 'no-results-message';
+            message.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #718096;">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <h3>Aucune offre trouvée</h3>
+                    <p>Essayez de modifier vos critères de recherche</p>
+                    <button onclick="resetSearch()" style="margin-top: 1rem; padding: 0.75rem 2rem; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-redo"></i> Réinitialiser la recherche
+                    </button>
+                </div>
+            `;
+            document.querySelector('.jobs-grid').appendChild(message);
+        }
+    }
+
+    function resetSearch() {
+        document.getElementById('searchJob').value = '';
+        document.getElementById('searchLocation').value = 'Dakar';
+        document.querySelectorAll('.job-card').forEach(card => {
+            card.style.display = 'block';
+        });
+        const message = document.querySelector('.no-results-message');
+        if (message) message.remove();
+        
+        // Réactiver le filtre "Toutes les offres"
+        document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+        document.querySelector('[data-filter="all"]').classList.add('active');
+    }
+
+    // Filtres par type de contrat
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            // Retirer la classe active de tous les filtres
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            
+            // Ajouter la classe active au filtre cliqué
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const cards = document.querySelectorAll('.job-card');
+            
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else if (filter === 'urgent') {
+                    const hasUrgent = card.querySelector('.badge-urgent');
+                    if (hasUrgent) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                } else {
+                    // Filtrer par type de contrat
+                    const typeContrat = card.getAttribute('data-type');
+                    if (typeContrat === filter) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+
+            // Supprimer l'ancien message s'il existe
+            const oldMessage = document.querySelector('.no-results-message');
+            if (oldMessage) oldMessage.remove();
+
+            // Afficher message si aucun résultat
+            if (visibleCount === 0) {
+                showNoResultsMessage(0);
+            }
+        });
+    });
+
+    // Réinitialiser les filtres au chargement
+    window.addEventListener('load', function() {
+        document.querySelectorAll('.job-card').forEach(card => {
+            card.style.display = 'block';
+        });
+    });
     </script>
 </body>
 </html>
