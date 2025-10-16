@@ -1,13 +1,13 @@
 # recrutement/views.py
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import OffreEmploi, Candidat
+from .models import OffreEmploi, Candidat, RH
 from .forms import CandidatForm, OffreForm, CustomUserCreationForm, CvUploadForm
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 def liste_candidats(request, offre_id):
     offre = get_object_or_404(OffreEmploi, id=offre_id)
@@ -147,7 +147,9 @@ def register(request):
 @login_required
 def redirect_user(request):
     print(f"user connecté: {request.user.get_full_name()}, role: {request.user.role}")
-    if request.user.role == 'recruteur':
+    if request.user.role == 'admin':
+        return redirect('admin_dashboard')
+    elif request.user.role == 'recruteur':
         return redirect('interface_rh')
     else:
         return redirect('home')
@@ -231,3 +233,116 @@ def profil(request):
     }
     
     return render(request, 'recrutement/profil.html', context)
+
+
+User = get_user_model()
+
+def is_admin(user):
+    return user.is_authenticated and user.role == 'admin'
+
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        # Supprimer un utilisateur
+        if action == 'delete':
+            user_id = request.POST.get('user_id')
+            try:
+                user = User.objects.get(id=user_id)
+                user.delete()
+                messages.success(request, f'Utilisateur {user.get_full_name()} supprimé avec succès.')
+            except User.DoesNotExist:
+                messages.error(request, 'Utilisateur introuvable.')
+            return redirect('admin_dashboard')
+        
+        # Ajouter un recruteur
+        elif action == 'add':
+            prenom = request.POST.get('prenom')
+            nom = request.POST.get('nom')
+            email = request.POST.get('email')
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            entreprise = request.POST.get('entreprise')
+            
+            try:
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    prenom=prenom,
+                    nom=nom,
+                    role='recruteur'
+                )
+                # Créer le profil RH
+                from .models import RH
+                RH.objects.create(user=user, entreprise=entreprise)
+                
+                messages.success(request, f'Recruteur {user.get_full_name()} créé avec succès.')
+            except Exception as e:
+                messages.error(request, f'Erreur lors de la création : {str(e)}')
+            return redirect('admin_dashboard')
+    
+    # Récupérer les utilisateurs
+    candidats = User.objects.filter(role='candidat').order_by('-date_joined')
+    recruteurs = User.objects.filter(role='recruteur').order_by('-date_joined')
+    
+    # Statistiques
+    nb_candidats = candidats.count()
+    nb_recruteurs = recruteurs.count()
+    nb_offres = OffreEmploi.objects.count()
+    
+    context = {
+        'candidats': candidats,
+        'recruteurs': recruteurs,
+        'nb_candidats': nb_candidats,
+        'nb_recruteurs': nb_recruteurs,
+        'nb_offres': nb_offres,
+    }
+    
+    return render(request, 'recrutement/admin_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        user.prenom = request.POST.get('prenom')
+        user.nom = request.POST.get('nom')
+        user.email = request.POST.get('email')
+        user.username = request.POST.get('username')
+        
+        # Si c'est un recruteur, mettre à jour l'entreprise
+        if user.role == 'recruteur':
+            entreprise = request.POST.get('entreprise')
+            rh, created = RH.objects.get_or_create(user=user)
+            rh.entreprise = entreprise
+            rh.save()
+        
+        # Changer le mot de passe si fourni
+        password = request.POST.get('password')
+        if password:
+            user.set_password(password)
+        
+        user.save()
+        messages.success(request, f'Utilisateur {user.get_full_name()} modifié avec succès.')
+        return redirect('admin_dashboard')
+    
+    # Si c'est un recruteur, récupérer l'entreprise
+    entreprise = ''
+    if user.role == 'recruteur':
+        try:
+            rh = RH.objects.get(user=user)
+            entreprise = rh.entreprise
+        except RH.DoesNotExist:
+            entreprise = ''
+    
+    context = {
+        'user': user,
+        'entreprise': entreprise,
+    }
+    
+    return render(request, 'recrutement/edit_user.html', context)

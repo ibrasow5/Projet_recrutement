@@ -42,7 +42,12 @@ urlpatterns = [
     path('interface_rh/', views.interface_rh, name='interface_rh'),
     path('postuler/<int:offre_id>/', views.postuler, name='postuler'),
     path('profil/', views.profil, name='profil'),
+
+    # ✅ Page Admin
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

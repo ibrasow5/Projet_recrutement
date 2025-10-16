@@ -8,6 +8,7 @@ class Utilisateur(AbstractUser):
     ROLE_CHOICES = [
         ('recruteur', 'Recruteur'),
         ('candidat', 'Candidat'),
+        ('admin', 'Administrateur'),
     ]
     prenom = models.CharField(max_length=100, verbose_name="Prénom")
     nom = models.CharField(max_length=100, verbose_name="Nom")
@@ -88,3 +89,11 @@ class OffreEmploi(models.Model):
     
     def get_competences_list(self):
         return [comp.strip() for comp in self.competences.split(',') if comp.strip()]
+    
+
+class RH(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    entreprise = models.CharField(max_length=255, blank=True, null=True)
+    
+    def __str__(self):
+        return f"RH - {self.user.get_full_name()}"  

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - TalentMatch</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 3rem;
+        }
+
+        .floating-elements {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-circle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            left: 10%;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 8%;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-30px);
+                opacity: 0.6;
+            }
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .navbar-brand i {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .admin-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .admin-header {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.candidats {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .stat-icon.recruteurs {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .stat-icon.offres {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .stat-content p {
+            color: #718096;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .tabs-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1.25rem;
+            background: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: #f7fafc;
+        }
+
+        .tab.active {
+            color: #667eea;
+            background: #f7fafc;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn-add {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table thead {
+            background: #f7fafc;
+        }
+
+        .users-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .users-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #2d3748;
+        }
+
+        .users-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .users-table tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 0 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-edit:hover {
+            background: #1e40af;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-delete:hover {
+            background: #991b1b;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #718096;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .btn-close:hover {
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .users-table {
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
+            }
+
+            .users-table th,
+            .users-table td {
+                padding: 0.75rem 0.5rem;
+                white-space: nowrap;
+            }
+
+            .tab {
+                font-size: 0.9rem;
+                padding: 1rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <i class="fas fa-brain"></i>
+                <span>TalentMatch Admin</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Header -->
+        <div class="admin-header">
+            <h1><i class="fas fa-shield-alt"></i> Tableau de bord administrateur</h1>
+            <p>Gérez les utilisateurs et supervisez la plateforme</p>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon candidats">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ nb_candidats|default:0 }}</h3>
+                    <p>Candidats</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon recruteurs">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ nb_recruteurs|default:0 }}</h3>
+                    <p>Recruteurs</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon offres">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ nb_offres|default:0 }}</h3>
+                    <p>Offres actives</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(event, 'candidats')">
+                    <i class="fas fa-users"></i>
+                    Candidats ({{ nb_candidats|default:0 }})
+                </button>
+                <button class="tab" onclick="switchTab(event, 'recruteurs')">
+                    <i class="fas fa-user-tie"></i>
+                    Recruteurs ({{ nb_recruteurs|default:0 }})
+                </button>
+            </div>
+
+            <!-- Tab Candidats -->
+            <div class="tab-content active" id="candidats-tab">
+                <div class="table-header">
+                    <h3 style="margin: 0; color: #2d3748;"><i class="fas fa-users"></i> Liste des Candidats</h3>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-candidats" placeholder="Rechercher un candidat..." onkeyup="searchTable('candidats')">
+                    </div>
+                </div>
+
+                {% if candidats %}
+                <div style="overflow-x: auto;">
+                    <table class="users-table" id="table-candidats">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Date d'inscription</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidat in candidats %}
+                            <tr>
+                                <td>
+                                    <span class="user-avatar">
+                                        {% if candidat.prenom and candidat.nom %}
+                                            {{ candidat.prenom.0|upper }}{{ candidat.nom.0|upper }}
+                                        {% else %}
+                                            {{ candidat.username.0|upper }}
+                                        {% endif %}
+                                    </span>
+                                    {{ candidat.get_full_name|default:candidat.username }}
+                                </td>
+                                <td>{{ candidat.email }}</td>
+                                <td>{{ candidat.username }}</td>
+                                <td>{{ candidat.date_joined|date:"d/m/Y" }}</td>
+                                <td>
+                                    <button class="btn-action btn-edit" data-user-id="{{ candidat.id }}" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" data-user-id="{{ candidat.id }}" data-user-name="{{ candidat.get_full_name|default:candidat.username }}" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>Aucun candidat trouvé</h3>
+                    <p>Les candidats s'inscrivent via la page d'inscription</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Tab Recruteurs -->
+            <div class="tab-content" id="recruteurs-tab">
+                <div class="table-header">
+                    <h3 style="margin: 0; color: #2d3748;"><i class="fas fa-user-tie"></i> Liste des Recruteurs</h3>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-recruteurs" placeholder="Rechercher un recruteur..." onkeyup="searchTable('recruteurs')">
+                        </div>
+                        <button class="btn-add" onclick="openModal()">
+                            <i class="fas fa-plus"></i>
+                            Ajouter un recruteur
+                        </button>
+                    </div>
+                </div>
+
+                {% if recruteurs %}
+                <div style="overflow-x: auto;">
+                    <table class="users-table" id="table-recruteurs">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Entreprise</th>
+                                <th>Date d'inscription</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for recruteur in recruteurs %}
+                            <tr>
+                                <td>
+                                    <span class="user-avatar">
+                                        {% if recruteur.prenom and recruteur.nom %}
+                                            {{ recruteur.prenom.0|upper }}{{ recruteur.nom.0|upper }}
+                                        {% else %}
+                                            {{ recruteur.username.0|upper }}
+                                        {% endif %}
+                                    </span>
+                                    {{ recruteur.get_full_name|default:recruteur.username }}
+                                </td>
+                                <td>{{ recruteur.email }}</td>
+                                <td>{{ recruteur.username }}</td>
+                                <td>{{ recruteur.entreprise|default:"Non renseigné" }}</td>
+                                <td>{{ recruteur.date_joined|date:"d/m/Y" }}</td>
+                                <td>
+                                    <button class="btn-action btn-edit" data-user-id="{{ recruteur.id }}" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" data-user-id="{{ recruteur.id }}" data-user-name="{{ recruteur.get_full_name|default:recruteur.username }}" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Aucun recruteur trouvé</h3>
+                    <p>Cliquez sur "Ajouter un recruteur" pour créer un compte</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Recruteur -->
+    <div class="modal" id="recruteurModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Ajouter un recruteur</h3>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form method="post" action="{% url 'admin_dashboard' %}" id="recruteurForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur *</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="entreprise">Entreprise</label>
+                    <input type="text" id="entreprise" name="entreprise">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe *</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Switch entre les tabs
+        function switchTab(event, tabName) {
+            // Désactiver tous les tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Activer le tab sélectionné
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Recherche dans les tableaux
+        function searchTable(type) {
+            const input = document.getElementById('search-' + type);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('table-' + type);
+            
+            if (!table) return;
+            
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+        }
+
+        // Ouvrir le modal
+        function openModal() {
+            document.getElementById('recruteurModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Fermer le modal
+        function closeModal() {
+            document.getElementById('recruteurModal').classList.remove('show');
+            document.body.style.overflow = '';
+            document.getElementById('recruteurForm').reset();
+        }
+
+        // Gestion des boutons d'édition
+document.addEventListener('DOMContentLoaded', function() {
+    // Éditer un utilisateur
+    document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            window.location.href = `/admin/edit-user/${userId}/`;
+        });
+    });
+
+    // Supprimer un utilisateur
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            const userName = this.getAttribute('data-user-name');
+            
+            if (confirm(`Êtes-vous sûr de vouloir supprimer ${userName} ?\n\nCette action est irréversible.`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{% url "admin_dashboard" %}';
+                
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                form.innerHTML = `
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="user_id" value="${userId}">
+                `;
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+});
+
+        // Fermer modal en cliquant en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('recruteurModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Fermer modal avec la touche Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Auto-dismiss alerts après 5 secondes
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html
