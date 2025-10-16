@@ -207,3 +207,27 @@ def landing_page(request):
 def logout_view(request):
     logout(request)
     return redirect('landing')  # Redirection vers la landing page
+
+@login_required
+def profil(request):
+    # Récupérer ou créer le profil candidat
+    candidat, created = Candidat.objects.get_or_create(user=request.user)
+    
+    # Upload CV si POST
+    if request.method == 'POST' and request.FILES.get('cv'):
+        candidat.cv = request.FILES['cv']
+        candidat.save()
+        messages.success(request, 'Votre CV a été mis à jour avec succès !')
+        return redirect('profil')
+    
+    # Statistiques
+    nb_candidatures = Candidat.objects.filter(user=request.user).count()
+    nb_offres_actives = OffreEmploi.objects.count()
+    
+    context = {
+        'candidat': candidat,
+        'nb_candidatures': nb_candidatures,
+        'nb_offres_actives': nb_offres_actives,
+    }
+    
+    return render(request, 'recrutement/profil.html', context)

@@ -41,6 +41,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('interface_rh/', views.interface_rh, name='interface_rh'),
     path('postuler/<int:offre_id>/', views.postuler, name='postuler'),
+    path('profil/', views.profil, name='profil'),
 ]
 
 if settings.DEBUG:
