@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import OffreEmploi, Candidat
 from .forms import CandidatForm, OffreForm, CustomUserCreationForm, CvUploadForm
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -203,3 +203,7 @@ def landing_page(request):
         else:
             return redirect('home')
     return render(request, 'recrutement/landing.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('landing')  # Redirection vers la landing page

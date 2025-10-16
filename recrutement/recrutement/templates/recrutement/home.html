@@ -26,10 +26,15 @@
                 <a href="{% url 'home' %}" class="nav-link-header"><i class="fas fa-home"></i> Accueil</a>
                 <a href="#" class="nav-link-header"><i class="fas fa-briefcase"></i> Offres</a>
                 <a href="#" class="nav-link-header"><i class="fas fa-user"></i> Profil</a>
-                <a href="{% url 'logout' %}" class="logout-btn">
+                
+                <!-- Formulaire de déconnexion caché -->
+                <a href="#" class="logout-btn" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
                     <i class="fas fa-sign-out-alt"></i>
                     Déconnexion
                 </a>
+                <form method="post" action="{% url 'logout' %}" id="logoutForm" style="display: none;">
+                    {% csrf_token %}
+                </form>
             </div>
         </div>
     </nav>
