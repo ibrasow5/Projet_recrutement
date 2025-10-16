@@ -31,6 +31,7 @@ urlpatterns = [
     path('rh/offres/<int:offre_id>/candidats/', views.candidats_pour_offre, name='candidats_pour_offre'),
 
     # ✅ Page d'inscription et de connexion
+    path('', views.landing_page, name='landing'),
     path('register/', views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='recrutement/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),

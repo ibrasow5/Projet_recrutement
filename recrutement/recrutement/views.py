@@ -194,3 +194,12 @@ def delete_candidat(request, candidat_id):
     candidat.delete()
     messages.success(request, "Candidat supprimé avec succès.")
     return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+def landing_page(request):
+    # Si l'utilisateur est déjà connecté, rediriger selon son rôle
+    if request.user.is_authenticated:
+        if request.user.role == 'recruteur':
+            return redirect('interface_rh')
+        else:
+            return redirect('home')
+    return render(request, 'recrutement/landing.html')
