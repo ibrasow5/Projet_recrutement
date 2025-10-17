@@ -75,6 +75,10 @@ def interface_rh(request):
     candidats = Candidat.objects.select_related('user', 'offre').filter(offre__recruteur=request.user)
 
     matchings = []
+    # Dictionnaire pour stocker les scores par offre
+    scores_par_offre = {}
+    tous_les_scores = []  # Pour le score moyen global
+    
     for candidat in candidats:
         if candidat.user and candidat.offre:
             score = min(100, (len(candidat.user.get_full_name()) * 4) + (len(candidat.offre.titre) % 20) * 3)
@@ -83,14 +87,35 @@ def interface_rh(request):
                 'offre': candidat.offre,
                 'score': score
             })
-
+            
+            # Ajouter le score au dictionnaire par offre
+            offre_id = candidat.offre.id
+            if offre_id not in scores_par_offre:
+                scores_par_offre[offre_id] = []
+            scores_par_offre[offre_id].append(score)
+            
+            # Ajouter à la liste globale
+            tous_les_scores.append(score)
+    
     # 🔽 Tri du plus haut score au plus bas
     matchings = sorted(matchings, key=lambda x: x['score'], reverse=True)
+    
+    # Calculer la moyenne des scores pour chaque offre
+    for offre in offres:
+        if offre.id in scores_par_offre:
+            scores = scores_par_offre[offre.id]
+            offre.score_moyen = round(sum(scores) / len(scores))
+        else:
+            offre.score_moyen = 0
+    
+    # Calculer le score moyen global
+    score_moyen_global = round(sum(tous_les_scores) / len(tous_les_scores)) if tous_les_scores else 0
 
     context = {
         'offres': offres,
         'candidats': candidats,
         'matchings': matchings,
+        'score_moyen_global': score_moyen_global,  # ← Nouveau
     }
 
     return render(request, 'recrutement/interface_rh.html', context)

@@ -794,7 +794,7 @@
                         </div>
                         <div class="stat-trend positive">
                             <i class="fas fa-arrow-up"></i>
-                            +3 cette semaine
+                            +1 cette semaine
                         </div>
                     </div>
 
@@ -803,7 +803,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-number">3</div>
+                            <div class="stat-number">{{ candidats|length }}</div>
                             <div class="stat-label">Candidatures</div>
                         </div>
                         <div class="stat-trend positive">
@@ -817,7 +817,7 @@
                             <i class="fas fa-brain"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-number">82%</div>
+                            <div class="stat-number">{{ score_moyen_global }}%</div>
                             <div class="stat-label">Précision IA</div>
                         </div>
                         <div class="stat-trend positive">
@@ -873,7 +873,7 @@
                                 <span class="stat-label">Candidatures</span>
                             </div>
                             <div class="offer-stat">
-                                <span class="stat-value">85%</span>
+                                <span class="stat-value">{{ offre.score_moyen }}%</span>
                                 <span class="stat-label">Match</span>
                             </div>
                         </div>
