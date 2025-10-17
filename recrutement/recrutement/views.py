@@ -1,5 +1,7 @@
 # recrutement/views.py
 import io
+from io import BytesIO
+from django.core.files.base import ContentFile
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import OffreEmploi, Candidat, RH, Rapport
 from .forms import CandidatForm, OffreForm, CustomUserCreationForm, CvUploadForm
@@ -11,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from datetime import datetime, timedelta
 from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -402,39 +405,124 @@ def edit_user(request, user_id):
 
 @login_required
 def generer_rapport_simple(request):
-    # Récupérer les paramètres (ou valeurs par défaut)
-    type_rapport = request.POST.get('report_type', 'offres')
+    # 🔹 Récupérer les paramètres
+    type_rapport = request.POST.get('report_type', 'offres')  # "offres" ou "candidatures"
     periode = request.POST.get('report_period', 'month')
-    
-    # Récupérer les offres
-    offres = OffreEmploi.objects.all()[:20]
-    
-    # Créer un fichier texte simple
-    contenu = f"═══════════════════════════════════════════════\n"
-    contenu += f"   RAPPORT DES OFFRES D'EMPLOI - {periode.upper()}\n"
-    contenu += f"═══════════════════════════════════════════════\n"
-    contenu += f"Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}\n"
-    contenu += f"Total d'offres: {offres.count()}\n"
-    contenu += f"═══════════════════════════════════════════════\n\n"
-    
-    for i, offre in enumerate(offres, 1):
-        contenu += f"{i}. {offre.titre}\n"
-        contenu += f"   Entreprise: {offre.entreprise}\n"
-        contenu += f"   Localisation: {offre.localisation}\n"
-        contenu += f"   Type: {offre.type_contrat}\n"
-        contenu += f"   Candidatures: {offre.nb_candidats}\n"
-        contenu += f"   Date limite: {offre.date_limite.strftime('%d/%m/%Y')}\n"
-        contenu += f"   {'-'*45}\n\n"
-    
-    contenu += f"\n═══════════════════════════════════════════════\n"
-    contenu += f"Fin du rapport - TalentMatch RH\n"
-    contenu += f"═══════════════════════════════════════════════\n"
-    
-    # Retourner le fichier
-    response = HttpResponse(contenu, content_type='text/plain; charset=utf-8')
-    filename = f"rapport_offres_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    user = request.user  # Recruteur connecté
+
+    # 🔹 Nom du fichier
+    filename = f"rapport_{type_rapport}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+
+    # 🔹 Création d’un buffer mémoire pour le PDF
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    largeur, hauteur = A4
+    y = hauteur - 2*cm
+
+    # 🔹 Métadonnées du PDF
+    titre_document = f"RAPPORT DES {type_rapport.upper()} - {periode.upper()}"
+    p.setTitle(titre_document)
+    p.setAuthor("TalentMatch RH")
+    p.setSubject(f"Rapport généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}")
+    p.setCreator("TalentMatch RH")
+
+    # 🔹 En-tête
+    p.setFont("Helvetica-Bold", 16)
+    p.drawCentredString(largeur / 2, y, titre_document)
+    y -= 1.2*cm
+    p.setFont("Helvetica", 10)
+    p.drawString(2*cm, y, f"Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}")
+    y -= 0.8*cm
+
+    # 🔹 Corps du rapport selon le type
+    if type_rapport == "offres":
+        offres = OffreEmploi.objects.all().order_by('-date_publication')[:50]
+        p.drawString(2*cm, y, f"Total d'offres : {offres.count()}")
+        y -= 1*cm
+        p.line(2*cm, y, largeur - 2*cm, y)
+        y -= 0.5*cm
+
+        for i, offre in enumerate(offres, 1):
+            if y < 3*cm:
+                p.showPage()
+                y = hauteur - 2*cm
+
+            p.setFont("Helvetica-Bold", 12)
+            p.drawString(2*cm, y, f"{i}. {offre.titre}")
+            y -= 0.5*cm
+
+            p.setFont("Helvetica", 10)
+            p.drawString(2.5*cm, y, f"Entreprise: {offre.entreprise}")
+            y -= 0.4*cm
+            p.drawString(2.5*cm, y, f"Localisation: {offre.localisation}")
+            y -= 0.4*cm
+            p.drawString(2.5*cm, y, f"Type de contrat: {offre.type_contrat}")
+            y -= 0.4*cm
+            p.drawString(2.5*cm, y, f"Salaire: {offre.get_salaire_display()}")
+            y -= 0.4*cm
+            p.drawString(2.5*cm, y, f"Compétences: {', '.join(offre.get_competences_list())}")
+            y -= 0.4*cm
+            p.drawString(2.5*cm, y, f"Date limite: {offre.date_limite.strftime('%d/%m/%Y')}")
+            y -= 0.6*cm
+            p.line(2*cm, y, largeur - 2*cm, y)
+            y -= 0.8*cm
+
+    elif type_rapport == "candidatures":
+        candidatures = Candidat.objects.select_related('user', 'offre').all()[:50]
+        p.drawString(2*cm, y, f"Total de candidatures : {candidatures.count()}")
+        y -= 1*cm
+        p.line(2*cm, y, largeur - 2*cm, y)
+        y -= 0.5*cm
+
+        for i, cand in enumerate(candidatures, 1):
+            if y < 3*cm:
+                p.showPage()
+                y = hauteur - 2*cm
+
+            full_name = cand.user.get_full_name() if cand.user else "Candidat anonyme"
+            p.setFont("Helvetica-Bold", 12)
+            p.drawString(2*cm, y, f"{i}. {full_name}")
+            y -= 0.5*cm
+
+            p.setFont("Helvetica", 10)
+            if cand.offre:
+                p.drawString(2.5*cm, y, f"Offre: {cand.offre.titre} ({cand.offre.entreprise})")
+                y -= 0.4*cm
+            if cand.user and cand.user.email:
+                p.drawString(2.5*cm, y, f"Email: {cand.user.email}")
+                y -= 0.4*cm
+            p.drawString(2.5*cm, y, f"CV: {'Oui' if cand.cv else 'Non'}")
+            y -= 0.4*cm
+            p.line(2*cm, y, largeur - 2*cm, y)
+            y -= 0.8*cm
+
+    else:
+        p.drawString(2*cm, y, "⚠️ Type de rapport inconnu. Utilisez 'offres' ou 'candidatures'.")
+
+    # 🔹 Pied de page
+    p.setFont("Helvetica-Oblique", 9)
+    p.drawCentredString(largeur / 2, 1.5*cm, "Fin du rapport - TalentMatch RH")
+
+    p.showPage()
+    p.save()
+
+    # 🔹 Récupérer le contenu PDF
+    buffer.seek(0)
+    pdf_data = buffer.getvalue()
+
+    # 🔹 Sauvegarder le rapport dans la base
+    rapport = Rapport(
+        recruteur=user,
+        type_rapport=type_rapport,
+        periode=periode,
+        titre=titre_document,
+    )
+    rapport.fichier.save(filename, ContentFile(pdf_data))
+    rapport.save()
+
+    # 🔹 Envoyer le PDF en réponse pour téléchargement immédiat
+    response = HttpResponse(pdf_data, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    
     return response
 
 @login_required

@@ -1041,69 +1041,68 @@
 
 
             <!-- Section des rapports -->
-<div id="rapports" class="dashboard-section" style="display: none;">
-    <div class="section-header">
-        <h2 class="section-title">
-            <i class="fas fa-file-alt"></i>
-            Rapports
-        </h2>
-    </div>
-
-    <div class="reports-content">
-        <div class="report-options">
-            <h3>Générer un Rapport</h3>
-            <form class="report-form" method="post" action="/generer-rapport-simple/">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="report-type">Type de Rapport</label>
-                    <select id="report-type" name="report_type" class="form-control" required>
-                        <option value="offres">Offres d'Emploi</option>
-                        <option value="candidatures">Candidatures</option>
-                        <option value="matching">Scores de Matching</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="report-period">Période</label>
-                    <select id="report-period" name="report_period" class="form-control" required>
-                        <option value="week">Cette semaine</option>
-                        <option value="month">Ce mois</option>
-                        <option value="year">Cette année</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-file-pdf"></i> Générer le Rapport
-                </button>
-            </form>
-        </div>
-
-        <div class="generated-reports">
-            <h3>Rapports Générés</h3>
-            <div class="reports-list">
-                {% if rapports %}
-                    {% for rapport in rapports %}
-                    <div class="report-item">
-                        <div class="report-info">
-                            <h4>{{ rapport.titre }}</h4>
-                            <p>Généré le {{ rapport.date_creation|date:"d F Y à H:i" }}</p>
-                        </div>
-                        <div class="report-actions">
-                            <a href="{% url 'telecharger_rapport' rapport.id %}" class="btn btn-download">
-                                <i class="fas fa-download"></i> Télécharger
-                            </a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-state">
+            <div id="rapports" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
                         <i class="fas fa-file-alt"></i>
-                        <p>Aucun rapport généré pour le moment</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+                        Rapports
+                    </h2>
+                </div>
 
+                <div class="reports-content">
+                    <div class="report-options">
+                        <h3>Générer un Rapport</h3>
+                        <form class="report-form" method="post" action="/generer-rapport-simple/">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="report-type">Type de Rapport</label>
+                                <select id="report-type" name="report_type" class="form-control" required>
+                                    <option value="offres">Offres d'Emploi</option>
+                                    <option value="candidatures">Candidatures</option>
+                                    <option value="matching">Scores de Matching</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-period">Période</label>
+                                <select id="report-period" name="report_period" class="form-control" required>
+                                    <option value="week">Cette semaine</option>
+                                    <option value="month">Ce mois</option>
+                                    <option value="year">Cette année</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-pdf"></i> Générer le Rapport
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="generated-reports">
+                        <h3>Rapports Générés</h3>
+                        <div class="reports-list">
+                            {% if rapports %}
+                                {% for rapport in rapports %}
+                                <div class="report-item">
+                                    <div class="report-info">
+                                        <h4>{{ rapport.titre }}</h4>
+                                        <p>Généré le {{ rapport.date_creation|date:"d F Y à H:i" }}</p>
+                                    </div>
+                                    <div class="report-actions">
+                                        <a href="{% url 'telecharger_rapport' rapport.id %}" class="btn btn-download">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-file-alt"></i>
+                                    <p>Aucun rapport généré pour le moment</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
             <!-- Section de configuration -->
