@@ -310,6 +310,208 @@
             transform: translateX(26px);
         }
 
+        /* Styles pour le menu contextuel */
+        .offer-card {
+            position: relative;
+        }
+
+        .context-menu {
+            position: absolute;
+            right: 10px;
+            top: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 200px;
+            margin-top: 5px;
+            overflow: hidden;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .context-menu-item {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #ef4444;
+            transition: background-color 0.2s;
+        }
+
+        .context-menu-item:hover {
+            background-color: #fee2e2;
+        }
+
+        .context-menu-item i {
+            font-size: 16px;
+        }
+
+        /* Styles pour le modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-body p {
+            margin: 0 0 16px;
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .warning-text {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: #92400e;
+        }
+
+        .warning-text i {
+            margin-top: 2px;
+            color: #f59e0b;
+        }
+
+        .modal-footer {
+            padding: 16px 24px 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .modal-container {
+                width: 95%;
+            }
+            
+            .context-menu {
+                right: 5px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -490,26 +692,30 @@
                                 <span class="stat-label">Candidatures</span>
                             </div>
                             <div class="offer-stat">
-                                <span class="stat-value">{{ offre.candidats.count|add:"-10" }}</span>
-                                <span class="stat-label">Nouvelles</span>
-                            </div>
-                            <div class="offer-stat">
                                 <span class="stat-value">85%</span>
                                 <span class="stat-label">Match</span>
                             </div>
                         </div>
 
                         <div class="offer-actions">
-                            <button class="btn btn-outline">
+                            <a href="{% url 'modifier_offre' offre.id %}" class="btn btn-outline">
                                 <i class="fas fa-edit"></i>
                                 Modifier
-                            </button>
+                            </a>
                             <a href="{% url 'candidats_pour_offre' offre.id %}" class="btn btn-primary">
                                 <i class="fas fa-users"></i>
                                 Voir candidats
                             </a>
-                            <button class="btn btn-menu">
+                            <button class="btn btn-menu" data-offer-id="{{ offre.id }}" data-offer-title="{{ offre.titre }}">
                                 <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+
+                        <!-- Menu contextuel (caché par défaut) -->
+                        <div class="context-menu" id="menu-{{ offre.id }}" style="display: none;">
+                            <button class="context-menu-item delete-offer" data-offer-id="{{ offre.id }}" data-offer-title="{{ offre.titre }}">
+                                <i class="fas fa-trash-alt"></i>
+                                Supprimer l'offre
                             </button>
                         </div>
                     </div>
@@ -524,6 +730,35 @@
                         </a>
                     </div>
                     {% endfor %}
+                </div>
+            </div>
+
+            <!-- Modal de confirmation de suppression -->
+            <div class="modal-overlay" id="deleteOfferModal" style="display: none;">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3>
+                            <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                            Confirmer la suppression
+                        </h3>
+                        <button class="modal-close" onclick="closeDeleteModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Êtes-vous sûr de vouloir supprimer l'offre <strong id="offerTitleToDelete"></strong> ?</p>
+                        <p class="warning-text">
+                            <i class="fas fa-info-circle"></i>
+                            Cette action est irréversible. Toutes les candidatures associées seront également supprimées.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
+                        <button class="btn btn-danger" id="confirmDeleteBtn">
+                            <i class="fas fa-trash-alt"></i>
+                            Supprimer
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -798,47 +1033,145 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Toggle sidebar
-            document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+        // Toggle sidebar
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
                 document.querySelector('.rh-sidebar').classList.toggle('collapsed');
                 document.querySelector('.rh-main-content').classList.toggle('expanded');
             });
+        }
 
-            // Navigation active state and content loading
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                    this.classList.add('active');
+        // Navigation active state and content loading
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
 
-                    // Masquer toutes les sections
-                    document.querySelectorAll('.dashboard-section').forEach(section => {
-                        section.style.display = 'none';
-                    });
-
-                    // Afficher la section correspondante
-                    const target = this.getAttribute('data-target');
-                    document.getElementById(target).style.display = 'block';
+                // Masquer toutes les sections
+                document.querySelectorAll('.dashboard-section').forEach(section => {
+                    section.style.display = 'none';
                 });
-            });
 
-            // Set score-bar widths from data-score attribute
-            document.querySelectorAll('.score-bar[data-score]').forEach(function(bar) {
-                var score = bar.getAttribute('data-score');
-                if (score !== null) {
-                    bar.style.width = score + '%';
+                // Afficher la section correspondante
+                const target = this.getAttribute('data-target');
+                const targetSection = document.getElementById(target);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
                 }
             });
         });
 
-        function generateReport() {
-            const reportType = document.getElementById('report-type').value;
-            const reportPeriod = document.getElementById('report-period').value;
+        // Set score-bar widths from data-score attribute
+        document.querySelectorAll('.score-bar[data-score]').forEach(function(bar) {
+            var score = bar.getAttribute('data-score');
+            if (score !== null) {
+                bar.style.width = score + '%';
+            }
+        });
 
-            alert(`Génération du rapport : ${reportType} pour la période ${reportPeriod}`);
-            // Ajoutez ici la logique pour générer et télécharger le rapport
+        // Gestion du menu contextuel (3 points)
+        const menuButtons = document.querySelectorAll('.btn-menu');
+        let currentOpenMenu = null;
+
+        menuButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const offerId = this.getAttribute('data-offer-id');
+                const menu = document.getElementById('menu-' + offerId);
+                
+                // Fermer le menu précédent s'il existe
+                if (currentOpenMenu && currentOpenMenu !== menu) {
+                    currentOpenMenu.style.display = 'none';
+                }
+                
+                // Toggle le menu actuel
+                if (menu.style.display === 'none' || !menu.style.display) {
+                    menu.style.display = 'block';
+                    currentOpenMenu = menu;
+                } else {
+                    menu.style.display = 'none';
+                    currentOpenMenu = null;
+                }
+            });
+        });
+
+        // Fermer le menu en cliquant ailleurs
+        document.addEventListener('click', function() {
+            if (currentOpenMenu) {
+                currentOpenMenu.style.display = 'none';
+                currentOpenMenu = null;
+            }
+        });
+
+        // Gestion des boutons de suppression
+        const deleteButtons = document.querySelectorAll('.delete-offer');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const offerId = this.getAttribute('data-offer-id');
+                const offerTitle = this.getAttribute('data-offer-title');
+                openDeleteModal(offerId, offerTitle);
+            });
+        });
+    });
+
+    // Fonction pour générer les rapports
+    function generateReport() {
+        const reportType = document.getElementById('report-type').value;
+        const reportPeriod = document.getElementById('report-period').value;
+
+        alert(`Génération du rapport : ${reportType} pour la période ${reportPeriod}`);
+        // Ajoutez ici la logique pour générer et télécharger le rapport
+    }
+
+    // Ouvrir le modal de suppression
+    function openDeleteModal(offerId, offerTitle) {
+        const modal = document.getElementById('deleteOfferModal');
+        const titleElement = document.getElementById('offerTitleToDelete');
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        
+        titleElement.textContent = offerTitle;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Configurer le bouton de confirmation
+        confirmBtn.onclick = function() {
+            deleteOffer(offerId);
+        };
+    }
+
+    // Fermer le modal de suppression
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteOfferModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Supprimer l'offre
+    function deleteOffer(offerId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/offres/supprimer/${offerId}/`; // Ajustez l'URL selon votre configuration
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        form.innerHTML = `
+            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+        `;
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Fermer le modal avec Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
         }
+    });
 
+        
 
     </script>
 

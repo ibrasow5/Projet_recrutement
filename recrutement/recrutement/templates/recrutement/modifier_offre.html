@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier l'offre - TalentMatch</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h1 i {
+            color: #667eea;
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-edit"></i>
+                Modifier l'offre d'emploi
+            </h1>
+            <a href="{% url 'interface_rh' %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Retour au dashboard
+            </a>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Formulaire -->
+        <div class="form-card">
+            <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Informations générales -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informations générales
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label for="titre">Titre du poste<span class="required">*</span></label>
+                        <input type="text" id="titre" name="titre" value="{{ offre.titre }}" required>
+                        <p class="form-help">Le titre doit être clair et attractif</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="entreprise">Entreprise<span class="required">*</span></label>
+                            <input type="text" id="entreprise" name="entreprise" value="{{ offre.entreprise }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="localisation">Localisation<span class="required">*</span></label>
+                            <input type="text" id="localisation" name="localisation" value="{{ offre.localisation }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="type_contrat">Type de contrat<span class="required">*</span></label>
+                            <select id="type_contrat" name="type_contrat" required>
+                                <option value="">Sélectionnez un type</option>
+                                <option value="CDI" {% if offre.type_contrat == 'CDI' %}selected{% endif %}>CDI</option>
+                                <option value="CDD" {% if offre.type_contrat == 'CDD' %}selected{% endif %}>CDD</option>
+                                <option value="Stage" {% if offre.type_contrat == 'Stage' %}selected{% endif %}>Stage</option>
+                                <option value="Alternance" {% if offre.type_contrat == 'Alternance' %}selected{% endif %}>Alternance</option>
+                                <option value="Freelance" {% if offre.type_contrat == 'Freelance' %}selected{% endif %}>Freelance</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logo">Logo entreprise</label>
+                            <input type="file" id="logo" name="logo" accept="image/*">
+                            {% if offre.logo %}
+                                <p class="form-help">Logo actuel : <a href="{{ offre.logo.url }}" target="_blank">Voir</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="salaire_min">Salaire minimum (FCFA)</label>
+                            <input type="number" id="salaire_min" name="salaire_min" value="{{ offre.salaire_min|default:'' }}" placeholder="Ex: 300000">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salaire_max">Salaire maximum (FCFA)</label>
+                            <input type="number" id="salaire_max" name="salaire_max" value="{{ offre.salaire_max|default:'' }}" placeholder="Ex: 500000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-align-left"></i>
+                        Description du poste
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label for="description">Description<span class="required">*</span></label>
+                        <textarea id="description" name="description" required>{{ offre.description }}</textarea>
+                        <p class="form-help">Décrivez les missions, responsabilités et l'environnement de travail</p>
+                    </div>
+                </div>
+
+                <!-- Compétences -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i>
+                        Compétences requises
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label for="competences">Compétences<span class="required">*</span></label>
+                        <textarea id="competences" name="competences" required>{{ offre.competences }}</textarea>
+                        <p class="form-help">Séparez les compétences par des virgules (ex: Python, Django, SQL)</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="temps_plein" name="temps_plein" value="1" {% if offre.temps_plein %}checked{% endif %}>
+                            <label for="temps_plein">Temps plein</label>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="urgent" name="urgent" value="1" {% if offre.urgent %}checked{% endif %}>
+                            <label for="urgent">Offre urgente</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dates -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Date limite de candidature
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label for="date_limite">Date limite<span class="required">*</span></label>
+                        <input type="date" id="date_limite" name="date_limite" value="{{ offre.date_limite|date:'Y-m-d' }}" required>
+                        <p class="form-help">Date de publication actuelle : {{ offre.date_publication|date:"d/m/Y" }}</p>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="nouveau" name="nouveau" value="1" {% if offre.nouveau %}checked{% endif %}>
+                        <label for="nouveau">Marquer comme nouvelle offre</label>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="form-actions">
+                    <a href="{% url 'interface_rh' %}" class="btn btn-cancel">
+                        <i class="fas fa-times"></i>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-dismiss alerts après 5 secondes
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
+
+            // Validation des dates
+            const dateLimite = document.getElementById('date_limite');
+            const today = new Date().toISOString().split('T')[0];
+
+            dateLimite.addEventListener('change', function() {
+                if (dateLimite.value) {
+                    if (dateLimite.value < today) {
+                        alert('La date limite ne peut pas être dans le passé');
+                        dateLimite.value = '';
+                    }
+                }
+            });
+
+            // Validation des salaires
+            const salaireMin = document.getElementById('salaire_min');
+            const salaireMax = document.getElementById('salaire_max');
+
+            salaireMax.addEventListener('change', function() {
+                if (salaireMin.value && salaireMax.value) {
+                    if (parseInt(salaireMax.value) < parseInt(salaireMin.value)) {
+                        alert('Le salaire maximum doit être supérieur au salaire minimum');
+                        salaireMax.value = '';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

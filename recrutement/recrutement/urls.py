@@ -24,8 +24,8 @@ urlpatterns = [
     # ✅ Partie RH : gestion des offres d’emploi
     path('rh/offres/', views.liste_offres, name='liste_offres'),
     path('rh/offres/ajouter/', views.ajouter_offre, name='ajouter_offre'),
-    path('rh/offres/<int:offre_id>/modifier/', views.modifier_offre, name='modifier_offre'),
-    path('rh/offres/<int:offre_id>/supprimer/', views.supprimer_offre, name='supprimer_offre'),
+    path('rh/offres/modifier/<int:offre_id>/', views.modifier_offre, name='modifier_offre'),
+    path('rh/offres/supprimer/<int:offre_id>/', views.supprimer_offre, name='supprimer_offre'),
 
     # ✅ Liste des candidats pour une offre spécifique
     path('rh/offres/<int:offre_id>/candidats/', views.candidats_pour_offre, name='candidats_pour_offre'),

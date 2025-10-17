@@ -110,25 +110,60 @@ def liste_offres(request):
     offres = OffreEmploi.objects.all().order_by('-date_publication')
     return render(request, 'offres/liste_offres.html', {'offres': offres})
 
+# Vue pour modifier une offre
+@login_required
 def modifier_offre(request, offre_id):
+    # Récupérer l'offre (assurez-vous que le recruteur est le propriétaire)
     offre = get_object_or_404(OffreEmploi, id=offre_id)
+    
     if request.method == 'POST':
-        form = OffreForm(request.POST, instance=offre)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Offre modifiée avec succès.')
-            return redirect('liste_offres')
-    else:
-        form = OffreForm(instance=offre)
-    return render(request, 'offres/modifier_offre.html', {'form': form, 'offre': offre})
+        try:
+            # Mise à jour des champs
+            offre.titre = request.POST.get('titre')
+            offre.entreprise = request.POST.get('entreprise')
+            offre.localisation = request.POST.get('localisation')
+            offre.type_contrat = request.POST.get('type_contrat')
+            offre.description = request.POST.get('description')
+            offre.competences = request.POST.get('competences')
+            offre.date_limite = request.POST.get('date_limite')
+            
+            # Salaires (optionnels)
+            salaire_min = request.POST.get('salaire_min')
+            salaire_max = request.POST.get('salaire_max')
+            offre.salaire_min = int(salaire_min) if salaire_min else None
+            offre.salaire_max = int(salaire_max) if salaire_max else None
+            
+            # Checkboxes (BooleanField)
+            offre.temps_plein = 'temps_plein' in request.POST
+            offre.urgent = 'urgent' in request.POST
+            offre.nouveau = 'nouveau' in request.POST
+            
+            # Gestion du logo (si un nouveau fichier est uploadé)
+            if 'logo' in request.FILES:
+                offre.logo = request.FILES['logo']
+            
+            offre.save()
+            
+            messages.success(request, f"L'offre '{offre.titre}' a été modifiée avec succès !")
+            return redirect('interface_rh')
+            
+        except Exception as e:
+            messages.error(request, f"Erreur lors de la modification : {str(e)}")
+    
+    return render(request, 'recrutement/modifier_offre.html', {'offre': offre})
 
+
+@login_required
 def supprimer_offre(request, offre_id):
     offre = get_object_or_404(OffreEmploi, id=offre_id)
+    
     if request.method == 'POST':
+        titre = offre.titre
         offre.delete()
-        messages.success(request, 'Offre supprimée avec succès.')
-        return redirect('liste_offres')
-    return render(request, 'offres/confirmer_suppression.html', {'offre': offre})
+        messages.success(request, f"L'offre '{titre}' a été supprimée avec succès.")
+        return redirect('interface_rh')
+    
+    return redirect('interface_rh')
 
 def register(request):
     if request.method == 'POST':
