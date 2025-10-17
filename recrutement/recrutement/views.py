@@ -155,13 +155,23 @@ def modifier_offre(request, offre_id):
 
 @login_required
 def supprimer_offre(request, offre_id):
-    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    print(f"========== SUPPRESSION APPELÉE ==========")
+    print(f"Method: {request.method}")
+    print(f"Offre ID: {offre_id}")
     
     if request.method == 'POST':
-        titre = offre.titre
-        offre.delete()
-        messages.success(request, f"L'offre '{titre}' a été supprimée avec succès.")
-        return redirect('interface_rh')
+        try:
+            offre = get_object_or_404(OffreEmploi, id=offre_id)
+            print(f"Offre trouvée: {offre.titre}")
+            titre = offre.titre
+            offre.delete()
+            print(f"Offre supprimée: {titre}")
+            messages.success(request, f"L'offre '{titre}' a été supprimée avec succès.")
+        except Exception as e:
+            print(f"ERREUR: {e}")
+            messages.error(request, f"Erreur: {str(e)}")
+    else:
+        print("Pas de POST, redirection...")
     
     return redirect('interface_rh')
 

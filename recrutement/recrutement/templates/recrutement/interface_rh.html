@@ -512,6 +512,48 @@
             }
         }
 
+        .header-profile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            margin-top: 10px;
+            z-index: 1000;
+        }
+
+        .dropdown-item {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.2s;
+            border-radius: 8px;
+        }
+
+        .dropdown-item:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .dropdown-item i {
+            color: #ef4444;
+        }
+
     </style>
 </head>
 <body>
@@ -587,14 +629,25 @@
                 <div class="header-notifications">
                     <button class="notification-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-count">3</span>
                     </button>
                 </div>
-                <div class="header-profile">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="Profile" class="profile-avatar">
-                    <span class="profile-name">Fatou Ndiaye</span>
+                <div class="header-profile" onclick="toggleProfileDropdown(event)">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAbFBMVEX///8jHyAAAAAgHB0hHyDy8vL39/fr6+sdGRrU1NTn5+cbFhfd3d0XEhOioqIGAABCQUEQCQs3Nja6urrMy8tgYGBpaWmHh4d1dXVJSEioqKgMAAW0tLQpJSY8Ozt7e3tWVlYuLS7DwsOYmJiQMifCAAAE80lEQVR4nO2c23arOAyGg2zAYAwYSICQcEje/x0Hp+1OO+QAtkXnwHfXLi7+JQtJlkR2u42NjY2NjY2N/xNuWFy7Ps2ytO+uRej+tp7dzsvLXgI0gjPGRQOQ9OXF+1VJUXmWkhPnO1zKcxn9nqRKwE9BnzAQ1e/I8rtEPpSkIDLp/PU15eljK/2RBWm+siSvBP5K0s25oFzX4/fwTpIC9itKCtNkjiZKkzRcS5PXyjmaRlWObFc6QbeeqUkh63Ui/CGhdL6q5LCGpussH78DV3xNAXsZniZQygJ0UYNYZijHEQO2puPCw1PAEVdTmLHloliGG61iDUONpopRRYllXv4JEZiaTlqGGk11wtPkHRa/eh+IA162iajW6Y3nR/EK0Vzz9Mbzwyv4qkZXlKzQRDkaQeoD5mBpcheULBNTYVUwwax68zEJVlbOtV3KcRosTz+aWAorKccmlsJKf5uof7Wok4mjY9UJhXbqG0UVSKJCA0tJtIr4eT/qHURiadrtNWu8scrr0UTpXRsUiFeHSNupErzK0+3ftu8ew3vE3kusaaoE8+IX6l6xUDvFlZapGrwKXbG0EXSDYDeDOg1TNR2upp37uqX/0FCA3vY8woKGp4Jit6dGvKW+3lQrdK1duigDCrJKzzo4z78oUzbgt2FvFDBbFQOs4m7CxZmZAzm9rKVJ2WpWW0GuZydF1M/IgtCvPLN1q3dTSA7V+tsARf0quJOkXtGd7rgxAHsw0KKUMoDrumYK/xRHXlzD9IZDJNTxnyjurzIbzYdvM1j3UgGA5IzcYFyOf1aXu5XCdMAfuoc9EP7zbhLE3b4ezo5zHtJ9F/+I4DFwAj2ysfJMBSgCh58vu+eH0UgY/sy90eH2LsgM01he+ZVgJLxfZ4nKrxDLEDcUvO/bCDCUL28Dfjncn6awR1IVpcn3958oj36iy1f+T+5Pqw0FlOgeppN8J0Xa5ZN45OZdKqbPYuxNRNmjHMwagLaL80ugHD245MeuHUMEexBSRWbdVv7UTl+o2CTOw8hZqJj17DmZWr6Sur18fV/4CJ4vH6G2tzmqRVsbT0RRsHpTXrq18Qyb2xzF8hvoY4i9UtTNNNtSU3hmy61Kgznf32lKO5pM2udT7Bygm1o7PAWvbWTBo8FE5hE2Jn8u055mP4Yxc1/X750/w7yn7reWDTWaqjXNgSfLHqVoTMdstfY45jkiNdMUWfcoBZhVViXC6Y1RwSise7V1N1cwowBaIHiUQprkGvtB6gOjUNUjWcpoUGqruJsA+poCpNMzCgq6G5QzROkHdZwopTAoQHXXOt8jtFfnPd059nt4rxs+fZx4rmC1bvkSZVgRwSHa3Y5owBM16IoKzoiidCdumKLO/ylRfor39uk30PT3pd6hHzz/mbnP40jnx7hBPZwbrAa+IjGai3Rg3uucAobLL4elWyQzMP66zjvYLokJWPheJeZWA4MgVlbhinb+xsY7GLS2+sNHS7JGSRbXlvzYAb1vw+4QAefY8nTmdGDvP9J+Dgd2QNj+9qK4TRqp89GhTJI2jrAmtuHnOG/2SRImbwNB5Hm7Hx2rlErZSPFEG1VJgHAxPiJpWh2jlX6jwC1O126fElAkUnDOGCOM8VFKcvsnTffd9VSsvoKjlhGCPL6W1b6u2zbL2rau91V5jfMgCv3f/SGOjY2NjY2NjY21+AvoT01xQyK2vgAAAABJRU5ErkJggg==" alt="Profile" class="profile-avatar">
+                    <span class="profile-name">{{ user.get_full_name|default:user.username }}</span>
                     <i class="fas fa-chevron-down"></i>
+                    
+                    <!-- Dropdown menu -->
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Déconnexion
+                            </button>
+                        </form>
+                    </div>
                 </div>
+
             </div>
         </header>
 
@@ -711,12 +764,15 @@
                             </button>
                         </div>
 
-                        <!-- Menu contextuel (caché par défaut) -->
+                        <!-- Menu contextuel avec formulaire direct -->
                         <div class="context-menu" id="menu-{{ offre.id }}" style="display: none;">
-                            <button class="context-menu-item delete-offer" data-offer-id="{{ offre.id }}" data-offer-title="{{ offre.titre }}">
-                                <i class="fas fa-trash-alt"></i>
-                                Supprimer l'offre
-                            </button>
+                            <form method="post" action="{% url 'supprimer_offre' offre.id %}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer l\'offre {{ offre.titre|escapejs }} ?');">
+                                {% csrf_token %}
+                                <button type="submit" class="context-menu-item delete-offer">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Supprimer l'offre
+                                </button>
+                            </form>
                         </div>
                     </div>
                     {% empty %}
@@ -730,35 +786,6 @@
                         </a>
                     </div>
                     {% endfor %}
-                </div>
-            </div>
-
-            <!-- Modal de confirmation de suppression -->
-            <div class="modal-overlay" id="deleteOfferModal" style="display: none;">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <h3>
-                            <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
-                            Confirmer la suppression
-                        </h3>
-                        <button class="modal-close" onclick="closeDeleteModal()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Êtes-vous sûr de vouloir supprimer l'offre <strong id="offerTitleToDelete"></strong> ?</p>
-                        <p class="warning-text">
-                            <i class="fas fa-info-circle"></i>
-                            Cette action est irréversible. Toutes les candidatures associées seront également supprimées.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
-                        <button class="btn btn-danger" id="confirmDeleteBtn">
-                            <i class="fas fa-trash-alt"></i>
-                            Supprimer
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -1153,7 +1180,7 @@
     function deleteOffer(offerId) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `/offres/supprimer/${offerId}/`; // Ajustez l'URL selon votre configuration
+        form.action = `rh/offres/supprimer/${offerId}/`; // Ajustez l'URL selon votre configuration
         
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         form.innerHTML = `
@@ -1171,7 +1198,40 @@
         }
     });
 
+    // Supprimer l'offre
+    function deleteOffer(offerId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        // Utiliser l'URL Django avec le bon préfixe
+        form.action = `/rh/offres/supprimer/${offerId}/`;
         
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        form.innerHTML = `
+            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+        `;
+        
+        document.body.appendChild(form);
+        form.submit();
+    }    
+
+    function toggleProfileDropdown(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('profileDropdown');
+        
+        if (dropdown.style.display === 'none') {
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    // Fermer le dropdown quand on clique ailleurs
+    document.addEventListener('click', function() {
+        const dropdown = document.getElementById('profileDropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+    });
 
     </script>
 
