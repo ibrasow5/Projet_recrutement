@@ -312,8 +312,8 @@ def profil(request):
         messages.success(request, 'Votre CV a été mis à jour avec succès !')
         return redirect('profil')
     
-    # Statistiques
-    nb_candidatures = Candidat.objects.filter(user=request.user).count()
+    # Statistiques - Nombre d'offres auxquelles le candidat a postulé
+    nb_candidatures = Candidat.objects.filter(user=request.user, offre__isnull=False).count()
     nb_offres_actives = OffreEmploi.objects.count()
     
     context = {
