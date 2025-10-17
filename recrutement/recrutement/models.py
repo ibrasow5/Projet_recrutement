@@ -31,6 +31,7 @@ class Candidat(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     cv = models.FileField(upload_to='cv/', null=True, blank=True)
     offre = models.ForeignKey('OffreEmploi', on_delete=models.SET_NULL, null=True, blank=True, related_name="candidats")
+    score_matching = models.IntegerField(default=0, null=True, blank=True)  # ← Ajoutez ça
 
     def __str__(self):
         if self.user:

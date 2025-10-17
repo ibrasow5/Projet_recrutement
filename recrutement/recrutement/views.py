@@ -296,8 +296,14 @@ def logout_view(request):
 
 @login_required
 def profil(request):
-    # Récupérer ou créer le profil candidat
-    candidat, created = Candidat.objects.get_or_create(user=request.user)
+    # Récupérer le premier candidat ou en créer un
+    try:
+        candidat = Candidat.objects.filter(user=request.user).first()
+        if not candidat:
+            candidat = Candidat.objects.create(user=request.user, score_matching=0)
+    except Exception as e:
+        # En cas d'erreur, créer un nouveau
+        candidat = Candidat.objects.create(user=request.user, score_matching=0)
     
     # Upload CV si POST
     if request.method == 'POST' and request.FILES.get('cv'):
