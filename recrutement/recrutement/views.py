@@ -20,7 +20,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.pdfgen import canvas
 
 def liste_candidats(request, offre_id):
-    offre = get_object_or_404(OffreEmploi, id=offre_id)
+    offre = get_object_or_404(OffreEmploi, id=offre_id, recruteur=request.user)
     candidats = offre.candidats.all()  # grâce au related_name
 
     # Pagination
@@ -68,8 +68,11 @@ def delete_candidat_old(request, id):
     return HttpResponseRedirect(reverse('recrutement/liste_candidats'))
 
 def interface_rh(request):
-    offres = OffreEmploi.objects.all()
-    candidats = Candidat.objects.select_related('user', 'offre').all()
+    # Offres du RH connecté uniquement
+    offres = OffreEmploi.objects.filter(recruteur=request.user)
+
+    # Candidats uniquement pour les offres de ce RH
+    candidats = Candidat.objects.select_related('user', 'offre').filter(offre__recruteur=request.user)
 
     matchings = []
     for candidat in candidats:
@@ -98,6 +101,7 @@ def ajouter_offre(request):
         form = OffreForm(request.POST, request.FILES)  # ← IMPORTANT : request.FILES
         if form.is_valid():
             offre = form.save(commit=False)
+            offre.recruteur = request.user
             offre.nb_candidats = 0  # Initialiser à 0
             offre.save()
             messages.success(request, "Offre publiée avec succès!")
@@ -436,7 +440,7 @@ def generer_rapport_simple(request):
 
     # 🔹 Corps du rapport selon le type
     if type_rapport == "offres":
-        offres = OffreEmploi.objects.all().order_by('-date_publication')[:50]
+        offres = OffreEmploi.objects.filter(recruteur=user).order_by('-date_publication')[:50]
         p.drawString(2*cm, y, f"Total d'offres : {offres.count()}")
         y -= 1*cm
         p.line(2*cm, y, largeur - 2*cm, y)
@@ -468,7 +472,7 @@ def generer_rapport_simple(request):
             y -= 0.8*cm
 
     elif type_rapport == "candidatures":
-        candidatures = Candidat.objects.select_related('user', 'offre').all()[:50]
+        candidatures = Candidat.objects.filter(offre__recruteur=user).select_related('user', 'offre')[:50]
         p.drawString(2*cm, y, f"Total de candidatures : {candidatures.count()}")
         y -= 1*cm
         p.line(2*cm, y, largeur - 2*cm, y)

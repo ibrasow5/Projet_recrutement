@@ -46,6 +46,14 @@ class OffreEmploi(models.Model):
         ('Alternance', 'Alternance'),
         ('Freelance', 'Freelance'),
     ]
+
+    recruteur = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Lien vers Utilisateur (RH)
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="offres"
+    )
     
     entreprise = models.CharField(max_length=255, verbose_name="Entreprise")
     logo = models.ImageField(upload_to='logos/', null=True, blank=True, verbose_name="Logo entreprise")
