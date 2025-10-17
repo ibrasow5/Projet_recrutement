@@ -554,6 +554,134 @@
             color: #ef4444;
         }
 
+        .reports-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.report-options,
+.generated-reports {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.report-options h3,
+.generated-reports h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+}
+
+.report-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.report-form label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.report-form .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.report-form .form-control:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.report-item {
+    background: #f9fafb;
+    padding: 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.report-item:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.report-info h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.report-info p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.btn-download {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9ca3af;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+}
+
+@media (max-width: 968px) {
+    .reports-content {
+        grid-template-columns: 1fr;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -913,59 +1041,68 @@
 
 
             <!-- Section des rapports -->
-            <div id="rapports" class="dashboard-section" style="display: none;">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-file-alt"></i>
-                        Rapports
-                    </h2>
+<div id="rapports" class="dashboard-section" style="display: none;">
+    <div class="section-header">
+        <h2 class="section-title">
+            <i class="fas fa-file-alt"></i>
+            Rapports
+        </h2>
+    </div>
+
+    <div class="reports-content">
+        <div class="report-options">
+            <h3>Générer un Rapport</h3>
+            <form class="report-form" method="post" action="/generer-rapport-simple/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="report-type">Type de Rapport</label>
+                    <select id="report-type" name="report_type" class="form-control" required>
+                        <option value="offres">Offres d'Emploi</option>
+                        <option value="candidatures">Candidatures</option>
+                        <option value="matching">Scores de Matching</option>
+                    </select>
                 </div>
+                <div class="form-group">
+                    <label for="report-period">Période</label>
+                    <select id="report-period" name="report_period" class="form-control" required>
+                        <option value="week">Cette semaine</option>
+                        <option value="month">Ce mois</option>
+                        <option value="year">Cette année</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Générer le Rapport
+                </button>
+            </form>
+        </div>
 
-                <div class="reports-content">
-                    <div class="report-options">
-                        <h3>Générer un Rapport</h3>
-                        <form class="report-form">
-                            <div class="form-group">
-                                <label for="report-type">Type de Rapport</label>
-                                <select id="report-type" class="form-control">
-                                    <option value="offres">Offres d'Emploi</option>
-                                    <option value="candidatures">Candidatures</option>
-                                    <option value="matching">Scores de Matching</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="report-period">Période</label>
-                                <select id="report-period" class="form-control">
-                                    <option value="week">Cette semaine</option>
-                                    <option value="month">Ce mois</option>
-                                    <option value="year">Cette année</option>
-                                </select>
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="generateReport()">
-                                <i class="fas fa-file-pdf"></i> Générer le Rapport
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="generated-reports">
-                        <h3>Rapports Générés</h3>
-                        <div class="reports-list">
-                            <div class="report-item">
-                                <div class="report-info">
-                                    <h4>Rapport des Offres d'Emploi - Juin 2025</h4>
-                                    <p>Généré le 17 Juin 2025</p>
-                                </div>
-                                <div class="report-actions">
-                                    <a href="#" class="btn btn-download">
-                                        <i class="fas fa-download"></i> Télécharger
-                                    </a>
-                                </div>
-                            </div>
+        <div class="generated-reports">
+            <h3>Rapports Générés</h3>
+            <div class="reports-list">
+                {% if rapports %}
+                    {% for rapport in rapports %}
+                    <div class="report-item">
+                        <div class="report-info">
+                            <h4>{{ rapport.titre }}</h4>
+                            <p>Généré le {{ rapport.date_creation|date:"d F Y à H:i" }}</p>
+                        </div>
+                        <div class="report-actions">
+                            <a href="{% url 'telecharger_rapport' rapport.id %}" class="btn btn-download">
+                                <i class="fas fa-download"></i> Télécharger
+                            </a>
                         </div>
                     </div>
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <p>Aucun rapport généré pour le moment</p>
+                    </div>
+                {% endif %}
             </div>
-
+        </div>
+    </div>
+</div>
 
 
 

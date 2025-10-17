@@ -1,13 +1,20 @@
 # recrutement/views.py
+import io
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import OffreEmploi, Candidat, RH
+from .models import OffreEmploi, Candidat, RH, Rapport
 from .forms import CandidatForm, OffreForm, CustomUserCreationForm, CvUploadForm
 from django.contrib.auth import login, logout, get_user_model
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, FileResponse, HttpResponse
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from datetime import datetime, timedelta
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.pdfgen import canvas
 
 def liste_candidats(request, offre_id):
     offre = get_object_or_404(OffreEmploi, id=offre_id)
@@ -391,3 +398,50 @@ def edit_user(request, user_id):
     }
     
     return render(request, 'recrutement/edit_user.html', context)
+
+
+@login_required
+def generer_rapport_simple(request):
+    # Récupérer les paramètres (ou valeurs par défaut)
+    type_rapport = request.POST.get('report_type', 'offres')
+    periode = request.POST.get('report_period', 'month')
+    
+    # Récupérer les offres
+    offres = OffreEmploi.objects.all()[:20]
+    
+    # Créer un fichier texte simple
+    contenu = f"═══════════════════════════════════════════════\n"
+    contenu += f"   RAPPORT DES OFFRES D'EMPLOI - {periode.upper()}\n"
+    contenu += f"═══════════════════════════════════════════════\n"
+    contenu += f"Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}\n"
+    contenu += f"Total d'offres: {offres.count()}\n"
+    contenu += f"═══════════════════════════════════════════════\n\n"
+    
+    for i, offre in enumerate(offres, 1):
+        contenu += f"{i}. {offre.titre}\n"
+        contenu += f"   Entreprise: {offre.entreprise}\n"
+        contenu += f"   Localisation: {offre.localisation}\n"
+        contenu += f"   Type: {offre.type_contrat}\n"
+        contenu += f"   Candidatures: {offre.nb_candidats}\n"
+        contenu += f"   Date limite: {offre.date_limite.strftime('%d/%m/%Y')}\n"
+        contenu += f"   {'-'*45}\n\n"
+    
+    contenu += f"\n═══════════════════════════════════════════════\n"
+    contenu += f"Fin du rapport - TalentMatch RH\n"
+    contenu += f"═══════════════════════════════════════════════\n"
+    
+    # Retourner le fichier
+    response = HttpResponse(contenu, content_type='text/plain; charset=utf-8')
+    filename = f"rapport_offres_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
+
+@login_required
+def telecharger_rapport(request, rapport_id):
+    rapport = get_object_or_404(Rapport, id=rapport_id, recruteur=request.user)
+    
+    response = FileResponse(rapport.fichier.open('rb'), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{rapport.titre}.pdf"'
+    
+    return response

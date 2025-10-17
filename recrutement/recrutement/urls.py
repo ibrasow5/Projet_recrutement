@@ -46,6 +46,10 @@ urlpatterns = [
     # ✅ Page Admin
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
+
+    # ✅ Rapports
+    path('generer-rapport-simple/', views.generer_rapport_simple, name='generer_rapport_simple'),
+    path('rh/rapports/telecharger/<int:rapport_id>/', views.telecharger_rapport, name='telecharger_rapport'),
 ]
 
 

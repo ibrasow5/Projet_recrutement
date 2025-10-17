@@ -1,6 +1,7 @@
 # recrutement/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.conf import settings
 
 
@@ -97,3 +98,32 @@ class RH(models.Model):
     
     def __str__(self):
         return f"RH - {self.user.get_full_name()}"  
+    
+
+User = get_user_model()
+
+class Rapport(models.Model):
+    TYPE_CHOICES = [
+        ('offres', 'Offres d\'Emploi'),
+        ('candidatures', 'Candidatures'),
+        ('matching', 'Scores de Matching'),
+    ]
+    
+    PERIOD_CHOICES = [
+        ('week', 'Cette semaine'),
+        ('month', 'Ce mois'),
+        ('year', 'Cette année'),
+    ]
+    
+    recruteur = models.ForeignKey(User, on_delete=models.CASCADE)
+    type_rapport = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    periode = models.CharField(max_length=20, choices=PERIOD_CHOICES)
+    titre = models.CharField(max_length=255)
+    fichier = models.FileField(upload_to='rapports/')
+    date_creation = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-date_creation']
+    
+    def __str__(self):
+        return f"{self.titre} - {self.date_creation.strftime('%d/%m/%Y')}"    
